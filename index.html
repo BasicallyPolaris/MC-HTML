@@ -5,8 +5,11 @@
     <!-- Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="manifest" href="manifest.json">
     <!-- Website Title-->
     <title>Puzzle.it</title>
+    <link rel="icon" type=”image/svg+xml” href="./images/Octicons-puzzle.svg">
+    <link rel="mask-icon" href="mask-icon.svg" color="#000000">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -40,11 +43,11 @@
 
                     <div class="input-group col-lg">
                         <button class="btn btn-outline-primary disabled" type="button" id="generate-btn">Generate</button>
-                        <select class="form-select" id="inputGroupSelect">
-                            <option selected value="100">100 Pieces</option>
-                            <option value="200">200 Pieces</option>
-                            <option value="500">500 Pieces</option>
-                            <option value="1000">1000 Pieces</option>
+                        <select class="form-select" id="tileOptions">
+                            <option selected value="100">100 Tiles</option>
+                            <option value="200">200 Tiles</option>
+                            <option value="500">500 Tiles</option>
+                            <option value="1000">1000 Tiles</option>
                         </select>
                     </div>
                 </div>
@@ -70,8 +73,8 @@
                         tune
                     </div>
                     <div>
-                        <h3 class="fs-2 text-body-emphasis">Custom Piece Amount</h3>
-                        <p>Customize the amount of puzzle pieces you would like to work with!</p>
+                        <h3 class="fs-2 text-body-emphasis">Custom Tile Amount</h3>
+                        <p>Customize the amount of puzzle tiles you would like to work with!</p>
                     </div>
                 </div>
                 <div class="col d-flex align-items-start">
@@ -89,7 +92,7 @@
     </section>
     <section>
         <div class="container text-center">
-            <img src="" id="puzzle" class="img-fluid d-none" alt="puzzle-preview">
+            <img src="" id="puzzle" class="img-fluid p-5 d-none" alt="puzzle-preview">
         </div>
     </section>
 
@@ -106,5 +109,4 @@
     <!-- Custom JavaScript -->
     <script type="text/javascript" src="./scripts/scripts.js"></script>
 </body>
-
 </html>
