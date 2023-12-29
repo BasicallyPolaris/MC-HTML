@@ -5,38 +5,87 @@
     <!-- Meta -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- Website Title-->
     <title>Puzzle.it</title>
-
-    <!-- Stylesheets -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" type="style/css" href="./css/style.css">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nabla&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Recursive&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./css/style.css">
 </head>
 
 <body>
     <!-- Content -->
-    <main class="container">
+    <section class="container">
         <div class="px-4 py-5 my-5 text-center">
             <img class="d-block mx-auto mb-4" src="./images/Octicons-puzzle-dark.svg" alt="" width="72">
-            <h1 class="display-5 fw-bold text-body-emphasis" style="font-family: 'Nabla', sans-serif;">Puzzle.it</h1>
+            <h1 class="display-5 fw-bold text-body-emphasis title">Puzzle.it</h1>
             <div class="col-lg-6 mx-auto">
                 <p class="lead mb-4">
-                    Create your own digital puzzle with ease. Just <span class="fw-semibold">upload</span> your image
+                    Create your own digital puzzle with ease. Just <span class="fw-semibold">upload</span> your
+                    image
                     and <span class="fw-semibold">start puzzling!</span>
                 </p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button type="button" class="btn btn-primary btn-lg px-4 gap-3">Primary button</button>
-                    <button type="button" class="btn btn-outline-secondary btn-lg px-4">Secondary</button>
+                    <button type="button" class="col-sm-6 col-xxl-4 btn btn-primary btn-lg px-4">Upload Image <span
+                            class="material-symbols-outlined">upload</span></button>
+
+                    <div class="input-group col-lg">
+                        <button class="btn btn-outline-primary disabled" type="button">Generate</button>
+                        <select class="form-select" id="inputGroupSelect">
+                            <option selected value="100">100 Pieces</option>
+                            <option value="200">200 Pieces</option>
+                            <option value="500">500 Pieces</option>
+                            <option value="1000">1000 Pieces</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
-    </main>
+    </section>
+    <section class="bg-body-secondary">
+        <div class="container">
+            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+                <div class="col d-flex align-items-start">
+                    <div
+                        class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                        settings_photo_camera
+                    </div>
+                    <div>
+                        <h3 class="fs-2 text-body-emphasis">Custom Image</h3>
+                        <p>Use any image you like to puzzle right here on the website!</p>
+                    </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                    <div
+                        class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                        tune
+                    </div>
+                    <div>
+                        <h3 class="fs-2 text-body-emphasis">Custom Piece Amount</h3>
+                        <p>Customize the amount of puzzle pieces you would like to work with!</p>
+                    </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                    <div
+                        class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                        celebration
+                    </div>
+                    <div>
+                        <h3 class="fs-2 text-body-emphasis">Unlimited Fun!</h3>
+                        <p>Nothing is in your way of puzzling as many pictures as you want! Just enjoy yourself!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 
     <!-- Content end -->
