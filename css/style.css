@@ -17,3 +17,7 @@
     border: 1px dashed black;
     border-radius: 10px;
 }
+
+.custom-file-upload {
+    cursor: pointer;
+}

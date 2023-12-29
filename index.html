@@ -34,11 +34,12 @@
                     and <span class="fw-semibold">start puzzling!</span>
                 </p>
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <button type="button" class="col-sm-6 col-xxl-4 btn btn-primary btn-lg px-4">Upload Image <span
-                            class="material-symbols-outlined">upload</span></button>
+                    <label class="custom-file-upload col-sm-6 col-xxl-4 btn btn-primary btn-lg px-4"
+                        for="file-upload">Upload Image <span class="material-symbols-outlined">upload</span></label>
+                    <input id="file-upload" class="d-none" type="file" accept="image/png, image/jpeg"/>
 
                     <div class="input-group col-lg">
-                        <button class="btn btn-outline-primary disabled" type="button">Generate</button>
+                        <button class="btn btn-outline-primary disabled" type="button" id="generate-btn">Generate</button>
                         <select class="form-select" id="inputGroupSelect">
                             <option selected value="100">100 Pieces</option>
                             <option value="200">200 Pieces</option>
@@ -50,7 +51,7 @@
             </div>
         </div>
     </section>
-    <section class="bg-body-secondary">
+    <section class="bg-body-secondary" id="features">
         <div class="container">
             <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
                 <div class="col d-flex align-items-start">
@@ -84,6 +85,11 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+    <section>
+        <div class="container">
+            <img src="" id="puzzle" class="rounded mx-auto d-block d-none" alt="puzzle-preview">
         </div>
     </section>
 
