@@ -1,10 +1,12 @@
 *,
 *::before,
 *::after {
+    cursor: default;
     box-sizing: border-box;
 }
 
 .title {
+    cursor: default;
     font-family: "Recursive", sans-serif;
 }
 
@@ -20,4 +22,25 @@
 
 .custom-file-upload {
     cursor: pointer;
+}
+
+/* .draggable {
+    cursor: move;
+    cursor: -webkit-grab;
+    cursor: -moz-grabbing;
+    cursor: grab;
+}
+
+.draggable:active {
+    cursor: -webkit-grabbing;
+    cursor: -moz-grabbing;
+    cursor: grabbing;
+} */
+
+.puzzle-tile[draggable="true"] {
+    cursor: grab;
+}
+
+.puzzle-tile[draggable="true"]:active {
+    cursor: grabbing;
 }

@@ -7,7 +7,6 @@ $("#tileOptions").on("change", function () {
     if ($(".puzzle-tile").length !== 0) {
         $("#generate-btn").removeClass("disabled");
     }
-    console.log("schwanz");
 })
 
 function allowDrop(event) {
@@ -24,6 +23,11 @@ function drop(event) {
     const draggedElement = $("#" + draggedElementId);
     const droppedElement = $("#" + event.target.id);
 
+    // If the dropped on image is not draggable, then dont allow swapping
+    if (droppedElement.attr("draggable") === "false") {
+        return;
+    }
+
     // Swap the ID and src
     const draggedId = draggedElement.attr("id");
     const draggedSrc = draggedElement.attr("src");
@@ -33,6 +37,8 @@ function drop(event) {
 
     droppedElement.attr("id", draggedId);
     droppedElement.attr("src", draggedSrc);
+    checkTilePosition(droppedElement);
+    checkTilePosition(draggedElement);
 }
 
 // Handles the upload of an image
@@ -69,31 +75,41 @@ function generatePuzzlePieces() {
 
     const puzzlePattern = getRandomIndizies2d(tileAxis);
 
+    for (let i = 0; i < tileAxis; i++) {
+        for (let j = 0; j < tileAxis; j++) {
+            const offsetX = puzzlePattern[i * tileAxis + j][0];
+            const offsetY = puzzlePattern[i * tileAxis + j][1];
 
-    puzzlePattern.forEach(function (coordinate) {
-        const offsetX = coordinate[0];
-        const offsetY = coordinate[1];
+            var canvas = document.createElement("canvas");
+            canvas.width = deltaX;
+            canvas.height = deltaY;
+            canvas.getContext("2d").drawImage(originalImage, offsetX * deltaX, offsetY * deltaY, deltaX, deltaY, 0, 0, deltaX, deltaY);
 
-        var canvas = document.createElement("canvas");
-        canvas.width = deltaX;
-        canvas.height = deltaY;
-        canvas.getContext("2d").drawImage(originalImage, offsetX * deltaX, offsetY * deltaY, deltaX, deltaY, 0, 0, deltaX, deltaY);
+            var tile = new Image();
+            tile.src = canvas.toDataURL();
+            // Set id and class and attribute for logic and looks
+            tile.setAttribute("id", "tile-" + offsetX + "-" + offsetY);
+            tile.setAttribute("class", "puzzle-tile");
+            tile.setAttribute("coordinate", "tile-" + j + "-" + i);
+            tile.setAttribute("draggable", true);
 
-        var tile = new Image();
-        tile.src = canvas.toDataURL();
-        // Set id and class and attribute for logic and looks
-        tile.setAttribute("id", "tile-" + offsetX + "-" + offsetY);
-        tile.setAttribute("class", "puzzle-tile");
-        tile.setAttribute("coordinate", "tile-" + offsetX + "-" + offsetY);
+            // Add event listeners for drag and drop
+            tile.addEventListener('dragstart', drag);
+            tile.addEventListener('dragover', allowDrop);
+            tile.addEventListener('drop', drop);
+            tileStorage[0].append(tile);
+            $("#tile-" + offsetX + "-" + offsetY).css("width", imageXDelta + "px");
+            $("#tile-" + offsetX + "-" + offsetY).css("height", imageYDelta + "px");
+        }
+    }
+}
 
-        // Add event listeners for drag and drop
-        tile.addEventListener('dragstart', drag);
-        tile.addEventListener('dragover', allowDrop);
-        tile.addEventListener('drop', drop);
-        tileStorage[0].append(tile);
-        $("#tile-" + offsetX + "-" + offsetY).css("width", imageXDelta + "px");
-        $("#tile-" + offsetX + "-" + offsetY).css("height", imageYDelta + "px");
-    })
+// Checks whether the current tile is in the right spot, if so remove the draggable property
+function checkTilePosition(tile) {
+    console.log("Coord: " + tile.attr("coordinate") + "--.-- id: " + tile.attr("id"));
+    if (tile.attr("coordinate") == tile.attr("id")) {
+        tile.attr("draggable", false);
+    }
 }
 
 // Returns an array that hold 2d tuples for an set square axis length
@@ -101,7 +117,7 @@ function getRandomIndizies2d(axisLength) {
     const indizies = [];
     for (let i = 0; i < axisLength; i++) {
         for (let j = 0; j < axisLength; j++) {
-            indizies.push([i, j]);
+            indizies.push([j, i]);
         }
     }
 
