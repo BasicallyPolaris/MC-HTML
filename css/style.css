@@ -24,23 +24,20 @@
     cursor: pointer;
 }
 
-/* .draggable {
-    cursor: move;
-    cursor: -webkit-grab;
-    cursor: -moz-grabbing;
-    cursor: grab;
-}
-
-.draggable:active {
-    cursor: -webkit-grabbing;
-    cursor: -moz-grabbing;
-    cursor: grabbing;
-} */
-
 .puzzle-tile[draggable="true"] {
     cursor: grab;
 }
 
 .puzzle-tile[draggable="true"]:active {
     cursor: grabbing;
+}
+
+.puzzle-tile[landed="true"] {
+    animation: blink 0.5s linear;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
 }

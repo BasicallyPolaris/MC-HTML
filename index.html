@@ -39,10 +39,11 @@
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
                     <label class="custom-file-upload col-sm-6 col-xxl-4 btn btn-primary btn-lg px-4"
                         for="file-upload">Upload Image <span class="material-symbols-outlined">upload</span></label>
-                    <input id="file-upload" class="d-none" type="file" accept="image/png, image/jpeg"/>
+                    <input id="file-upload" class="d-none" type="file" accept="image/png, image/jpeg" />
 
                     <div class="input-group col-lg">
-                        <button class="btn btn-outline-primary disabled" type="button" id="generate-btn">Generate</button>
+                        <button class="btn btn-outline-primary disabled" type="button"
+                            id="generate-btn">Generate</button>
                         <select class="form-select" id="tileOptions">
                             <option selected value="100">100 Tiles</option>
                             <option value="196">200 Tiles</option>
@@ -108,7 +109,10 @@
         crossorigin="anonymous"></script>
     <!-- Navbar Script -->
     <script src="./scripts/navbar.js"></script>
+    <!-- ColorThief for Border -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
     <!-- Custom JavaScript -->
     <script type="text/javascript" src="./scripts/scripts.js"></script>
 </body>
+
 </html>

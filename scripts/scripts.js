@@ -1,3 +1,5 @@
+// TODO: FIX DRAGGABLE MOUSE ?
+const colorThief = new ColorThief();
 const inputImage = $("#file-upload");
 const puzzle = $("#puzzle");
 inputImage.on("change", handleUpload);
@@ -37,8 +39,8 @@ function drop(event) {
 
     droppedElement.attr("id", draggedId);
     droppedElement.attr("src", draggedSrc);
-    checkTilePosition(droppedElement);
-    checkTilePosition(draggedElement);
+    checkTilePosition(droppedElement[0]);
+    checkTilePosition(draggedElement[0]);
 }
 
 // Handles the upload of an image
@@ -58,40 +60,44 @@ function generatePuzzlePieces() {
     $("#generate-btn").addClass("disabled");
 
     const tileAmount = $("#tileOptions").find(":selected").val();
-    const tileAxis = Math.ceil(Math.sqrt(tileAmount));
+    const axisLength = Math.ceil(Math.sqrt(tileAmount));
     const originalImage = puzzle[0];
     const tileStorage = $("#tile-storage");
 
     // delta values for the actual image cropping
-    const deltaX = Math.ceil(originalImage.naturalWidth / tileAxis);
-    const deltaY = Math.ceil(originalImage.naturalHeight / tileAxis);
+    const deltaX = Math.ceil(originalImage.naturalWidth / axisLength);
+    const deltaY = Math.ceil(originalImage.naturalHeight / axisLength);
 
     // delta values for the displayed images (need to do some rounding)
-    const imageXDelta = Math.ceil(puzzle.width() / tileAxis);
-    const imageYDelta = Math.ceil(puzzle.height() / tileAxis);
+    const imageXDelta = Math.ceil(puzzle.width() / axisLength);
+    const imageYDelta = Math.ceil(puzzle.height() / axisLength);
 
-    tileStorage.css("width", (imageXDelta * tileAxis + 24) + "px");
-    tileStorage.css("height", (imageYDelta * tileAxis + 24) + "px");
+    tileStorage.css("width", (imageXDelta * axisLength + 24) + "px");
+    tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
 
-    const puzzlePattern = getRandomIndizies2d(tileAxis);
+    const puzzlePattern = getRandomIndizies2d(axisLength);
+    // const borderColor = getAverageRGB(originalImage);
+    const borderColor = colorThief.getColor(originalImage);
+    console.log(borderColor);
 
-    for (let i = 0; i < tileAxis; i++) {
-        for (let j = 0; j < tileAxis; j++) {
-            const offsetX = puzzlePattern[i * tileAxis + j][0];
-            const offsetY = puzzlePattern[i * tileAxis + j][1];
+    for (let i = 0; i < axisLength; i++) {
+        for (let j = 0; j < axisLength; j++) {
+            const offsetX = puzzlePattern[i * axisLength + j][0];
+            const offsetY = puzzlePattern[i * axisLength + j][1];
 
-            var canvas = document.createElement("canvas");
-            canvas.width = deltaX;
-            canvas.height = deltaY;
-            canvas.getContext("2d").drawImage(originalImage, offsetX * deltaX, offsetY * deltaY, deltaX, deltaY, 0, 0, deltaX, deltaY);
+            const tile = drawPuzzleTile(deltaX, deltaY, offsetX, offsetY, originalImage, axisLength, borderColor);
 
-            var tile = new Image();
-            tile.src = canvas.toDataURL();
             // Set id and class and attribute for logic and looks
             tile.setAttribute("id", "tile-" + offsetX + "-" + offsetY);
             tile.setAttribute("class", "puzzle-tile");
             tile.setAttribute("coordinate", "tile-" + j + "-" + i);
             tile.setAttribute("draggable", true);
+
+            // Check whether tile was randomly placed in the right position
+            if (offsetX === j && offsetY === i) {
+                tile.setAttribute("draggable", false);
+                tile.setAttribute("landed", true);
+            }
 
             // Add event listeners for drag and drop
             tile.addEventListener('dragstart', drag);
@@ -101,14 +107,6 @@ function generatePuzzlePieces() {
             $("#tile-" + offsetX + "-" + offsetY).css("width", imageXDelta + "px");
             $("#tile-" + offsetX + "-" + offsetY).css("height", imageYDelta + "px");
         }
-    }
-}
-
-// Checks whether the current tile is in the right spot, if so remove the draggable property
-function checkTilePosition(tile) {
-    console.log("Coord: " + tile.attr("coordinate") + "--.-- id: " + tile.attr("id"));
-    if (tile.attr("coordinate") == tile.attr("id")) {
-        tile.attr("draggable", false);
     }
 }
 
@@ -130,5 +128,65 @@ function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+
+// Checks whether the current tile is in the right spot, if so remove the draggable property
+function checkTilePosition(tile) {
+    if (tile.getAttribute("coordinate") === tile.getAttribute("id")) {
+        tile.setAttribute("draggable", false);
+        tile.setAttribute("landed", true);
+        setInterval(function () {
+            tile.removeAttribute("landed");
+        }, 500);
+    }
+}
+
+// Draw a puzzle tile using the 
+function drawPuzzleTile(width, height, offsetX, offsetY, originalImage, tileAxis, borderColor) {
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+
+    canvasCtx = canvas.getContext("2d");
+    canvasCtx.drawImage(originalImage, offsetX * width, offsetY * height, width, height, 0, 0, width, height);
+
+    drawTileBorder(offsetX, offsetY, width, height, tileAxis, canvasCtx, borderColor);
+
+    var tile = new Image();
+    tile.src = canvas.toDataURL();
+
+    return tile;
+}
+
+// Draws the borders of an image onto the image, dependent on the image position
+function drawTileBorder(xCoord, yCoord, width, height, axisLength, context, rgbColor) {
+    // context.strokeStyle = "rgb(" + rgbColor.r + ", " + rgbColor.g + ", " + rgbColor.b + ")";
+    context.strokeStyle = "rgb(" + rgbColor[0] + ", " + rgbColor[1] + ", " + rgbColor[2] + ")";
+    context.lineWidth = Math.ceil(width * 0.10);
+    context.beginPath();
+
+    if (xCoord === 0) {
+        context.moveTo(0, 0);
+        context.lineTo(0, height);
+        context.stroke();
+    }
+
+    if (xCoord === axisLength - 1) {
+        context.moveTo(width, 0);
+        context.lineTo(width, height);
+        context.stroke();
+    }
+
+    if (yCoord === 0) {
+        context.moveTo(0, 0);
+        context.lineTo(width, 0);
+        context.stroke();
+    }
+
+    if (yCoord === axisLength - 1) {
+        context.moveTo(0, height);
+        context.lineTo(width, height);
+        context.stroke();
     }
 }
