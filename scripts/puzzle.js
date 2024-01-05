@@ -1,9 +1,15 @@
 // TODO: FIX DRAGGABLE MOUSE ?
 const colorThief = new ColorThief();
 const inputImage = $("#file-upload");
-const puzzle = $("#puzzle");
+const puzzle = $("#puzzle-image");
+var drawBorder = true;
+var drawTimer = true;
+
 inputImage.on("change", handleUpload);
 
+$("#generate-border-switch").on("click", function () {
+    drawBorder = drawBorder ? false : true;
+})
 $("#generate-btn").on("click", generatePuzzlePieces);
 $("#tileOptions").on("change", function () {
     if ($(".puzzle-tile").length !== 0) {
@@ -76,9 +82,7 @@ function generatePuzzlePieces() {
     tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
 
     const puzzlePattern = getRandomIndizies2d(axisLength);
-    // const borderColor = getAverageRGB(originalImage);
     const borderColor = colorThief.getColor(originalImage);
-    console.log(borderColor);
 
     for (let i = 0; i < axisLength; i++) {
         for (let j = 0; j < axisLength; j++) {
@@ -151,7 +155,9 @@ function drawPuzzleTile(width, height, offsetX, offsetY, originalImage, tileAxis
     canvasCtx = canvas.getContext("2d");
     canvasCtx.drawImage(originalImage, offsetX * width, offsetY * height, width, height, 0, 0, width, height);
 
-    drawTileBorder(offsetX, offsetY, width, height, tileAxis, canvasCtx, borderColor);
+    if (drawBorder) {
+        drawTileBorder(offsetX, offsetY, width, height, tileAxis, canvasCtx, borderColor);
+    }
 
     var tile = new Image();
     tile.src = canvas.toDataURL();
@@ -189,4 +195,8 @@ function drawTileBorder(xCoord, yCoord, width, height, axisLength, context, rgbC
         context.lineTo(width, height);
         context.stroke();
     }
+}
+
+function drawTimer() {
+    
 }

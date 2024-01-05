@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="de">
+<html class="h-100" lang="de">
 
 <head>
     <!-- Meta -->
@@ -24,81 +24,120 @@
     <link rel="stylesheet" href="./css/style.css">
 </head>
 
-<body>
-    <!-- Content -->
-    <section class="container" id="hero">
-        <div class="px-4 py-5 my-5 text-center">
-            <img class="d-block mx-auto mb-4" src="./images/Octicons-puzzle-dark.svg" alt="" width="72">
-            <h1 class="display-5 fw-bold text-body-emphasis title">Puzzle.it</h1>
-            <div class="col-lg-6 mx-auto">
-                <p class="lead mb-4">
-                    Create your own digital puzzle with ease. Just <span class="fw-semibold">upload</span> your
-                    image
-                    and <span class="fw-semibold">start puzzling!</span>
-                </p>
-                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <label class="custom-file-upload col-sm-6 col-xxl-4 btn btn-primary btn-lg px-4"
-                        for="file-upload">Upload Image <span class="material-symbols-outlined">upload</span></label>
-                    <input id="file-upload" class="d-none" type="file" accept="image/png, image/jpeg" />
-
-                    <div class="input-group col-lg">
-                        <button class="btn btn-outline-primary disabled" type="button"
-                            id="generate-btn">Generate</button>
-                        <select class="form-select" id="tileOptions">
-                            <option selected value="100">100 Tiles</option>
-                            <option value="196">200 Tiles</option>
-                            <option value="484">500 Tiles</option>
-                            <option value="1000">1000 Tiles</option>
-                        </select>
+<body class="h-100">
+    <div class="content">
+        <!-- Content -->
+        <section class="container" id="hero">
+            <div class="px-4 py-5 my-5 text-center">
+                <h1 class="display-5 fw-bold text-body-emphasis title">Puzzle.it</h1>
+                <div class="col-lg-6 mx-auto">
+                    <p class="lead mb-4">
+                        Create your own digital puzzle with ease. Just <span class="fw-semibold">upload</span> your
+                        image
+                        and <span class="fw-semibold">start puzzling!</span>
+                    </p>
+                </div>
+                <div class="d-grid col-lg-6 mx-auto my-auto">
+                    <div class="row">
+                        <label
+                            class="custom-file-upload col-12 col-sm-3 col-md-4 col-lg-3 col-xl-4 mb-2 mb-sm-0 btn btn-primary btn-lg d-flex align-items-center justify-content-center"
+                            for="file-upload">Upload<span class="material-symbols-outlined">upload</span></label>
+                        <input id="file-upload" class="d-none" type="file" accept="image/png, image/jpeg" />
+                        <div class="col-10 col-sm-7 px-0 pe-2 px-sm-2">
+                            <div class="input-group h-100">
+                                <button class="btn btn-outline-primary disabled" type="button"
+                                    id="generate-btn">Generate</button>
+                                <select class="form-select" id="tileOptions">
+                                    <option selected value="49">Easy (50 Tiles)</option>
+                                    <option value="100">Medium (100 Tiles)</option>
+                                    <option value="196">Hard (200 Tiles)</option>
+                                    <option value="484">Extreme (500 Tiles)</option>
+                                    <option value="1024">Impossible (1000 Tiles)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <a class="btn btn-secondary col-2 col-md-1 col-lg-2 col-xl-1 d-flex align-items-center justify-content-center"
+                            href="#settings-tab" data-bs-toggle="collapse" role="button" aria-expanded="false"
+                            aria-controls="settings-tab"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
+                                <path
+                                    d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492M5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0" />
+                                <path
+                                    d="M9.796 1.343c-.527-1.79-3.065-1.79-3.592 0l-.094.319a.873.873 0 0 1-1.255.52l-.292-.16c-1.64-.892-3.433.902-2.54 2.541l.159.292a.873.873 0 0 1-.52 1.255l-.319.094c-1.79.527-1.79 3.065 0 3.592l.319.094a.873.873 0 0 1 .52 1.255l-.16.292c-.892 1.64.901 3.434 2.541 2.54l.292-.159a.873.873 0 0 1 1.255.52l.094.319c.527 1.79 3.065 1.79 3.592 0l.094-.319a.873.873 0 0 1 1.255-.52l.292.16c1.64.893 3.434-.902 2.54-2.541l-.159-.292a.873.873 0 0 1 .52-1.255l.319-.094c1.79-.527 1.79-3.065 0-3.592l-.319-.094a.873.873 0 0 1-.52-1.255l.16-.292c.893-1.64-.902-3.433-2.541-2.54l-.292.159a.873.873 0 0 1-1.255-.52zm-2.633.283c.246-.835 1.428-.835 1.674 0l.094.319a1.873 1.873 0 0 0 2.693 1.115l.291-.16c.764-.415 1.6.42 1.184 1.185l-.159.292a1.873 1.873 0 0 0 1.116 2.692l.318.094c.835.246.835 1.428 0 1.674l-.319.094a1.873 1.873 0 0 0-1.115 2.693l.16.291c.415.764-.42 1.6-1.185 1.184l-.291-.159a1.873 1.873 0 0 0-2.693 1.116l-.094.318c-.246.835-1.428.835-1.674 0l-.094-.319a1.873 1.873 0 0 0-2.692-1.115l-.292.16c-.764.415-1.6-.42-1.184-1.185l.159-.291A1.873 1.873 0 0 0 1.945 8.93l-.319-.094c-.835-.246-.835-1.428 0-1.674l.319-.094A1.873 1.873 0 0 0 3.06 4.377l-.16-.292c-.415-.764.42-1.6 1.185-1.184l.292.159a1.873 1.873 0 0 0 2.692-1.115z" />
+                            </svg></a>
+                    </div>
+                    <div class="collapse" id="settings-tab">
+                        <div class="row pt-2 "> <!-- Switch classes to this if you want the box to be small -->
+                            <div class="card card-body d-grid justify-content-center">
+                                <div class="row">
+                                    <div class="form-check form-switch d-inline-flex">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="generate-border-switch" checked>
+                                        <label class="form-check-label ps-1" for="generate-border-switch">Generate
+                                            Border</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="form-check form-switch d-inline-flex">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="display-change-switch" checked>
+                                        <label class="form-check-label ps-1" for="display-change-switch">Display
+                                            Timer</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <section class="bg-body-secondary" id="features">
-        <div class="container">
-            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
-                <div class="col d-flex align-items-start">
-                    <div
-                        class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                        settings_photo_camera
+        </section>
+        <section class="bg-body-secondary" id="features">
+            <div class="container">
+                <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+                    <div class="col d-flex align-items-start">
+                        <div
+                            class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                            settings_photo_camera
+                        </div>
+                        <div>
+                            <h3 class="fs-2 text-body-emphasis">Custom Image</h3>
+                            <p>Use any image you like to puzzle right here on the website!</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="fs-2 text-body-emphasis">Custom Image</h3>
-                        <p>Use any image you like to puzzle right here on the website!</p>
+                    <div class="col d-flex align-items-start">
+                        <div
+                            class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                            joystick
+                        </div>
+                        <div>
+                            <h3 class="fs-2 text-body-emphasis">Custom Difficulty Level</h3>
+                            <p>Customize the amount of puzzle tiles you would like to work with!</p>
+                        </div>
                     </div>
-                </div>
-                <div class="col d-flex align-items-start">
-                    <div
-                        class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                        tune
-                    </div>
-                    <div>
-                        <h3 class="fs-2 text-body-emphasis">Custom Tile Amount</h3>
-                        <p>Customize the amount of puzzle tiles you would like to work with!</p>
-                    </div>
-                </div>
-                <div class="col d-flex align-items-start">
-                    <div
-                        class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
-                        celebration
-                    </div>
-                    <div>
-                        <h3 class="fs-2 text-body-emphasis">Unlimited Fun!</h3>
-                        <p>Nothing is in your way of puzzling as many pictures as you want! Just enjoy yourself!</p>
+                    <div class="col d-flex align-items-start">
+                        <div
+                            class="material-symbols-outlined icon-square text-body-emphasis bg-body-secondary d-inline-flex align-items-center justify-content-center fs-4 flex-shrink-0 me-3">
+                            celebration
+                        </div>
+                        <div>
+                            <h3 class="fs-2 text-body-emphasis">Unlimited Fun!</h3>
+                            <p>Nothing is in your way of puzzling as many pictures as you want! Just enjoy yourself!</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <section>
-        <div class="container text-center">
-            <img src="" id="puzzle" class="img-fluid p-5 d-none" alt="puzzle-preview">
-        </div>
-        <div id="tile-storage" class="container text-center">
-        </div>
-    </section>
+        </section>
+        <section id="puzzle">
+            <div class="container text-center">
+                <img src="" id="puzzle-image" class="img-fluid p-5 d-none" alt="puzzle-preview">
+            </div>
+            <div id="timer">
 
+            </div>
+            <div id="tile-storage" class="container text-center">
+            </div>
+        </section>
+    </div>
 
     <!-- Content end -->
     <!-- jQuery -->
@@ -109,10 +148,12 @@
         crossorigin="anonymous"></script>
     <!-- Navbar Script -->
     <script src="./scripts/navbar.js"></script>
+    <!-- Footer Script -->
+    <script src="./scripts/footer.js"></script>
     <!-- ColorThief for Border -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/color-thief/2.3.0/color-thief.umd.js"></script>
-    <!-- Custom JavaScript -->
-    <script type="text/javascript" src="./scripts/scripts.js"></script>
+    <!-- Puzzle JavaScript -->
+    <script type="text/javascript" src="./scripts/puzzle.js"></script>
 </body>
 
 </html>

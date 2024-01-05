@@ -5,6 +5,15 @@
     box-sizing: border-box;
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1 0 auto;
+}
+
 .title {
     cursor: default;
     font-family: "Recursive", sans-serif;
