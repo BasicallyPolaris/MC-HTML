@@ -10,6 +10,10 @@ body {
   flex-direction: column;
 }
 
+canvas {
+  vertical-align: bottom;
+}
+
 .content {
   flex: 1 0 auto;
 }
@@ -17,6 +21,17 @@ body {
 .title {
     cursor: default;
     font-family: "Recursive", sans-serif;
+}
+
+.tile-storage {
+  font-size: 0px;
+}
+
+.timer {
+  width: 150px;
+  padding: 10px;
+  border: 2px solid grey;
+  border-radius: 10px;
 }
 
 .material-symbols-outlined {

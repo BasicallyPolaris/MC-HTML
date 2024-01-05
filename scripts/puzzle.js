@@ -2,20 +2,23 @@
 const colorThief = new ColorThief();
 const inputImage = $("#file-upload");
 const puzzle = $("#puzzle-image");
+const timer = $("#timer");
 var drawBorder = true;
 var drawTimer = true;
+
+var timeStarted;
+var timerInterval;
 
 inputImage.on("change", handleUpload);
 
 $("#generate-border-switch").on("click", function () {
-    drawBorder = drawBorder ? false : true;
-})
+    drawBorder = !drawBorder;
+});
+$("#display-timer-switch").on("click", function () {
+    drawTimer = !drawTimer;
+    console.log(drawTimer);
+});
 $("#generate-btn").on("click", generatePuzzlePieces);
-$("#tileOptions").on("change", function () {
-    if ($(".puzzle-tile").length !== 0) {
-        $("#generate-btn").removeClass("disabled");
-    }
-})
 
 function allowDrop(event) {
     event.preventDefault();
@@ -36,15 +39,14 @@ function drop(event) {
         return;
     }
 
-    // Swap the ID and src
-    const draggedId = draggedElement.attr("id");
-    const draggedSrc = draggedElement.attr("src");
+    const droppedContainer = droppedElement.parent();
+    const draggedContainer = draggedElement.parent();
 
-    draggedElement.attr("id", droppedElement.attr("id"));
-    draggedElement.attr("src", droppedElement.attr("src"))
+    // Swap the coordinates and then the elemntes in html
 
-    droppedElement.attr("id", draggedId);
-    droppedElement.attr("src", draggedSrc);
+    draggedContainer.append(droppedElement);
+    droppedContainer.append(draggedElement);    
+
     checkTilePosition(droppedElement[0]);
     checkTilePosition(draggedElement[0]);
 }
@@ -62,8 +64,7 @@ function handleUpload() {
 
 // TODO: If its a border piece, draw a border + then add according width and height to the elements and the div holding the images up top
 function generatePuzzlePieces() {
-    $(".puzzle-tile").remove();
-    $("#generate-btn").addClass("disabled");
+    $(".tile-placeholder").remove();
 
     const tileAmount = $("#tileOptions").find(":selected").val();
     const axisLength = Math.ceil(Math.sqrt(tileAmount));
@@ -91,10 +92,20 @@ function generatePuzzlePieces() {
 
             const tile = drawPuzzleTile(deltaX, deltaY, offsetX, offsetY, originalImage, axisLength, borderColor);
 
+            // Setup the div containing the tile with its coordinate
+            const div = document.createElement("div");
+
+            div.classList.add("d-inline-block");
+            div.classList.add("tile-placeholder")
+            div.setAttribute("id", "divtile-" + i + "-" + j);
+            div.setAttribute("coordinate", "tile-" + i + "-" + j);
+            div.style.width = imageXDelta + "px";
+            div.style.height = imageYDelta + "px";
+            div.append(tile);
+
             // Set id and class and attribute for logic and looks
-            tile.setAttribute("id", "tile-" + offsetX + "-" + offsetY);
+            tile.setAttribute("id", "tile-" + offsetY + "-" + offsetX);
             tile.setAttribute("class", "puzzle-tile");
-            tile.setAttribute("coordinate", "tile-" + j + "-" + i);
             tile.setAttribute("draggable", true);
 
             // Check whether tile was randomly placed in the right position
@@ -107,11 +118,13 @@ function generatePuzzlePieces() {
             tile.addEventListener('dragstart', drag);
             tile.addEventListener('dragover', allowDrop);
             tile.addEventListener('drop', drop);
-            tileStorage[0].append(tile);
-            $("#tile-" + offsetX + "-" + offsetY).css("width", imageXDelta + "px");
-            $("#tile-" + offsetX + "-" + offsetY).css("height", imageYDelta + "px");
+            tileStorage[0].append(div);
+            $("#tile-" + offsetY + "-" + offsetX).css("width", imageXDelta + "px");
+            $("#tile-" + offsetY + "-" + offsetX).css("height", imageYDelta + "px");
         }
     }
+
+    startTimer();
 }
 
 // Returns an array that hold 2d tuples for an set square axis length
@@ -137,7 +150,7 @@ function shuffleArray(array) {
 
 // Checks whether the current tile is in the right spot, if so remove the draggable property
 function checkTilePosition(tile) {
-    if (tile.getAttribute("coordinate") === tile.getAttribute("id")) {
+    if (tile.parentNode.getAttribute("coordinate") === tile.getAttribute("id")) {
         tile.setAttribute("draggable", false);
         tile.setAttribute("landed", true);
         setInterval(function () {
@@ -159,10 +172,11 @@ function drawPuzzleTile(width, height, offsetX, offsetY, originalImage, tileAxis
         drawTileBorder(offsetX, offsetY, width, height, tileAxis, canvasCtx, borderColor);
     }
 
-    var tile = new Image();
-    tile.src = canvas.toDataURL();
+    // var tile = new Image();
+    // tile.src = canvas.toDataURL();
 
-    return tile;
+    // return tile;
+    return canvas;
 }
 
 // Draws the borders of an image onto the image, dependent on the image position
@@ -197,6 +211,25 @@ function drawTileBorder(xCoord, yCoord, width, height, axisLength, context, rgbC
     }
 }
 
-function drawTimer() {
-    
+function startTimer() {
+    if (timeStarted != Date.now()) {
+        timeStarted = Date.now();
+        clearInterval(timerInterval);
+    }
+
+    if (drawTimer) {
+        timer.parent().removeClass("d-none");
+        timerInterval = setInterval(countUp, 1000);
+    }
+}
+
+function countUp() {
+    const deltaTime = Date.now() - timeStarted;
+    const minutes = Math.floor(deltaTime / 1000 / 60);
+    const seconds = Math.floor(deltaTime / 1000 % 60);
+
+    const minuteString = minutes < 10 ? "0" + minutes : minutes;
+    const secondsString = seconds < 10 ? "0" + seconds : seconds;
+
+    timer.text(minuteString + ":" + secondsString);
 }
