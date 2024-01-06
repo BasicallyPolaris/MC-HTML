@@ -19,6 +19,13 @@ const frameMS = 50;
 var timerIntervals = [];
 var axisLength = 0;
 
+// Webcam-Source selectors
+const webcamSelect = $("#webcam-select")[0];
+const videoSource = webcamSelect.value;
+
+// Get all devices for camerra
+navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
+
 // Stores the actual file that was uploaded most recently
 var file;
 
@@ -304,7 +311,7 @@ function drawTileBorder(xCoord, yCoord, width, height, axisLength, context, rgbC
 /// Tries to get a webcam with hd quality, if not tries to get one with vga constraints or stops.
 function initializeWebcam() {
     resetVideo();
-    const videoSource = videoSelect.value;
+    const videoSource = webcamSelect.value;
     const hdConstraints = {
         video: {
             deviceId: videoSource ? { exact: videoSource } : undefined,
@@ -506,30 +513,67 @@ function resetVideo() {
     clearInterval(timerInterval);
 }
 
-// Get the right webcam
-const videoSelect = $("#webcam-select")[0];
-
 // Sets all video devices with their right value in the settings pannel
 function getVideoDevices(deviceInfos) {
     // Handles being called several times to update labels. Preserve values.
-    while (videoSelect.firstChild) {
-        videoSelect.removeChild(videoSelect.firstChild);
+    while (webcamSelect.firstChild) {
+        webcamSelect.removeChild(webcamSelect.firstChild);
     }
     for (let i = 0; i !== deviceInfos.length; ++i) {
         const deviceInfo = deviceInfos[i];
         const option = document.createElement('option');
         option.value = deviceInfo.deviceId;
         if (deviceInfo.kind === 'videoinput') {
-            option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
-            videoSelect.appendChild(option);
+            option.text = deviceInfo.label || `camera ${webcamSelect.length + 1}`;
+            webcamSelect.appendChild(option);
         }
     }
 }
 
-// Get all devices for camerra
-navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
-
 // Set a listener to change webcam source on the fly if selector changes
-videoSelect.onchange = function () {
-    initializeWebcam();
+webcamSelect.onchange = function () {
+    if (!videoTrack) {
+        initializeWebcam();
+    }
+    setNewWebcam();
+}
+
+// Set new webcam on select change
+function setNewWebcam() {
+    const videoSource = webcamSelect.value;
+    const hdConstraints = {
+        video: {
+            deviceId: videoSource ? { exact: videoSource } : undefined,
+            width: 1280,
+            height: 720,
+        }
+    }
+
+    const vgaConstraints = {
+        video: {
+            deviceId: videoSource ? { exact: videoSource } : undefined,
+            width: 640,
+            height: 480,
+        }
+    }
+
+    navigator.getUserMedia(hdConstraints, function (stream) {
+        video.srcObject = stream;
+        videoTrack = stream.getTracks()[0];
+        setUpVideo();
+    }, function (e) {
+        if (videoTrack) {
+            videoTrack.stop();
+        }
+        navigator.getUserMedia(vgaConstraints, function (stream) {
+            video.srcObject = stream;
+            videoTrack = stream.getTracks()[0];
+            setUpVideo();
+        }, function (e) {
+            if (videoTrack) {
+                videoTrack.stop();
+            }
+            alert("Sorry, your webcam isn't supported or is unavailable.")
+        });
+    });
 }
