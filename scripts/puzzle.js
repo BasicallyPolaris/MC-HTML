@@ -46,6 +46,14 @@ $("#webcam-btn").on("click", function () {
     }
 });
 
+$("#webcam-video").parent().on("click", function () {
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
+    }
+});
+
 // Drag and Drop API
 function allowDrop(event) {
     event.preventDefault();
@@ -82,17 +90,12 @@ function handleUpload() {
     const file = inputFile.prop("files")[0];
     const inputURL = URL.createObjectURL(file);
     resetVideo();
+    resetPuzzle();
     if (file.type.match("video/*")) {
         // If its a video, display and play it muted, allow to pause it
         video.src = inputURL;
         video.muted = true;
-        video.addEventListener("click", function () {
-            if (video.paused) {
-                video.play();
-            } else {
-                video.pause();
-            }
-        })
+        video.classList.add("container");
         video.setAttribute("id", "webcam-video");
         video.setAttribute("autoplay", true);
         video.setAttribute("alt", "video-stream");
@@ -319,6 +322,7 @@ function setUpVideo() {
     video.setAttribute("id", "webcam-video");
     video.setAttribute("autoplay", true);
     video.setAttribute("alt", "video-stream");
+    video.classList.add("container");
     video.addEventListener('loadedmetadata', function () {
         videoWidth = video.videoWidth;
         videoHeight = video.videoHeight;
