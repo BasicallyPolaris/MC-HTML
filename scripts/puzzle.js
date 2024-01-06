@@ -9,6 +9,7 @@ var drawTimer = true;
 // Variables used for the Timer
 var timeStarted;
 var timerInterval;
+var rightPieces = 0;
 
 // Variables used for the video puzzle
 var videoWidth = 0;
@@ -46,6 +47,7 @@ $("#generate-btn").on("click", function () {
     // Define the axis length
     const tileAmount = $("#tileOptions").find(":selected").val();
     axisLength = Math.ceil(Math.sqrt(tileAmount));
+    rightPieces = 0;
     if (videoTrack || file.type == "video/mp4") {
         drawVideoPuzzlePieces(video);
     } else {
@@ -112,8 +114,16 @@ function startTimer() {
 
     if (drawTimer) {
         timer.parent().removeClass("d-none");
+        timer.removeClass("timerSuccess");
         timerInterval = setInterval(countUp, 1000);
     }
+}
+
+// set the timer to its finish state when you succeed
+function finishTimer() {
+    clearInterval(timerInterval);
+    timer.addClass("timerSuccess");
+    showModal();
 }
 
 /// Used to count up the timer
@@ -259,6 +269,10 @@ function checkTilePosition(tile) {
         setInterval(function () {
             tile.removeAttribute("landed");
         }, 500);
+        rightPieces++;
+        if (rightPieces == Math.pow(axisLength, 2)) {
+            finishTimer();
+        }
     }
 }
 
@@ -576,4 +590,16 @@ function setNewWebcam() {
             alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable.")
         });
     });
+}
+
+// Show bootstrap toast
+function showModal() {
+    const modalText = $("#success-modal p");
+    const timeSplit = timer.text() ? timer.text().split(":") : [0,0];
+    const minutes = parseInt(timeSplit[0]);
+    const seconds = parseInt(timeSplit[1]);
+    modalText.text("It only took you " + minutes + " minutes and " + seconds + " seconds to finish this puzzle!");
+    // Select the toast container
+    const myModal = bootstrap.Modal.getOrCreateInstance("#success-modal");
+    myModal.show();
 }

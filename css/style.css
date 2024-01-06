@@ -34,6 +34,10 @@ canvas {
   border-radius: 10px;
 }
 
+.timerSuccess {
+  color: green;
+}
+
 .webcam-select-view {
   min-width: 800px;
 }
