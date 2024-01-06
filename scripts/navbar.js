@@ -2,6 +2,8 @@ insertNavbar();
 
 /* Used to insert the navbar at the top of a page */
 function insertNavbar() {
-    $("body").prepend("<div id='navbar-placeholder'></div>");
-    $("#navbar-placeholder").load("nav.html"); 
+    $("#content").prepend("<div id='navbar-placeholder'></div>");
+    $.get("nav.html", function(data) {
+        $("#navbar-placeholder").replaceWith(data); 
+    })
 }

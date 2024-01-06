@@ -14,7 +14,7 @@ canvas {
   vertical-align: bottom;
 }
 
-.content {
+#content {
   flex: 1 0 auto;
 }
 
