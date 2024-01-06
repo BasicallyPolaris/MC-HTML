@@ -23,9 +23,11 @@ inputImage.on("change", handleUpload);
 $("#generate-border-switch").on("click", function () {
     drawBorder = !drawBorder;
 });
+
 $("#display-timer-switch").on("click", function () {
     drawTimer = !drawTimer;
 });
+
 $("#generate-btn").on("click", function () {
     if (videoTrack) {
         drawVideoPuzzlePieces(video);
@@ -33,16 +35,18 @@ $("#generate-btn").on("click", function () {
         generatePuzzlePieces(puzzle[0]);
     }
 });
+
 $("#webcam-btn").on("click", function () {
     if (videoTrack) {
         if (videoTrack.stop) { videoTrack.stop(); }
         videoTrack = null;
         resetVideo();
     } else {
-        initializeWebcamPuzzle();
+        initializeWebcam();
     }
 });
 
+// Drag and Drop API
 function allowDrop(event) {
     event.preventDefault();
 }
@@ -65,8 +69,7 @@ function drop(event) {
     const droppedContainer = droppedElement.parent();
     const draggedContainer = draggedElement.parent();
 
-    // Swap the coordinates and then the elemntes in html
-
+    // Swap the coordinates and then the elementes in html
     draggedContainer.append(droppedElement);
     droppedContainer.append(draggedElement);
 
@@ -104,7 +107,6 @@ function generatePuzzlePieces(originalImage) {
 
     const puzzlePattern = getRandomIndizies2d(axisLength);
     const borderColor = colorThief.getColor(originalImage);
-
 
     for (let i = 0; i < axisLength; i++) {
         for (let j = 0; j < axisLength; j++) {
@@ -253,7 +255,7 @@ function countUp() {
 }
 
 /// Tries to get a webcam with hd quality, if not tries to get one with vga constraints or stops.
-function initializeWebcamPuzzle() {
+function initializeWebcam() {
     const hdConstraints = {
         video: {
             width: 1280,
@@ -390,6 +392,7 @@ function resetPuzzle() {
     $("#tile-storage").removeAttr("style");
     $("#tile-storage").removeClass("d-none");
     $(".tile-placeholder").remove();
+    $("#generate-btn").addClass("disabled");
     timer.parent().addClass("d-none");
     clearInterval(timerInterval);
 }
@@ -403,6 +406,7 @@ function resetVideo() {
     $("#webcam-video").parent().addClass("d-none");
     $("#tile-storage").removeAttr("style");
     $("#tile-storage").removeClass("d-none");
+    $("#generate-btn").addClass("disabled");
     $(".tile-placeholder").remove();
     timer.parent().addClass("d-none");
     clearInterval(timerInterval);
