@@ -532,13 +532,13 @@ function getVideoDevices(deviceInfos) {
 
 // Set a listener to change webcam source on the fly if selector changes
 webcamSelect.onchange = function () {
-    if (!videoTrack) {
-        initializeWebcam();
+    // Only change to new webcam if already a webcam stream exists
+    if (videoTrack) {
+        setNewWebcam();
     }
-    setNewWebcam();
 }
 
-// Set new webcam on select change
+// Set new webcam on settings select change
 function setNewWebcam() {
     const videoSource = webcamSelect.value;
     const hdConstraints = {
@@ -573,7 +573,7 @@ function setNewWebcam() {
             if (videoTrack) {
                 videoTrack.stop();
             }
-            alert("Sorry, your webcam isn't supported or is unavailable.")
+            alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable.")
         });
     });
 }
