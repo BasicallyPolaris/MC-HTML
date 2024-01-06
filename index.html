@@ -33,7 +33,7 @@
                 <div class="col-lg-6 mx-auto">
                     <p class="lead mb-4">
                         Create your own digital puzzle with ease. Just <span class="fw-semibold">upload</span> your
-                        image
+                        image or video
                         and <span class="fw-semibold">start puzzling!</span>
                     </p>
                 </div>
@@ -44,7 +44,8 @@
                             for="file-upload">Upload Image / Video<span
                                 class="material-symbols-outlined ps-2">upload</span></label>
                         <input id="file-upload" class="d-none" type="file" accept="image/png, image/jpeg, video/*" />
-                        <div class="btn btn-primary btn-lg col align-items-center justify-content-center" type="button" id="webcam-btn">Webcam 
+                        <div class="btn btn-primary btn-lg col align-items-center justify-content-center" type="button"
+                            id="webcam-btn">Webcam
                             Video-Puzzle
                             <span class="material-symbols-outlined ps-2">
                                 videocam
@@ -76,23 +77,25 @@
                             </svg></a>
                     </div>
                     <div class="collapse" id="settings-tab">
-                        <div class="row pt-2 "> <!-- Switch classes to this if you want the box to be small -->
-                            <div class="card card-body d-grid justify-content-center">
-                                <div class="row">
-                                    <div class="form-check form-switch d-inline-flex">
-                                        <input class="form-check-input" type="checkbox" role="switch"
-                                            id="generate-border-switch" checked>
-                                        <label class="form-check-label ps-1" for="generate-border-switch">Generate
-                                            Border</label>
-                                    </div>
+                        <div class="row pt-2"> <!-- Switch classes to this if you want the box to be small -->
+                            <div class="card card-body d-flex justify-content-start gap-1">
+                                <div class="form-check form-switch d-inline-flex">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="generate-border-switch" checked>
+                                    <label class="form-check-label ps-1" for="generate-border-switch">Generate
+                                        Border</label>
                                 </div>
-                                <div class="row">
-                                    <div class="form-check form-switch d-inline-flex">
-                                        <input class="form-check-input" type="checkbox" role="switch"
-                                            id="display-timer-switch" checked>
-                                        <label class="form-check-label ps-1" for="display-timer-switch">Display
-                                            Timer</label>
-                                    </div>
+                                <div class="form-check form-switch d-inline-flex">
+                                    <input class="form-check-input" type="checkbox" role="switch"
+                                        id="display-timer-switch" checked>
+                                    <label class="form-check-label ps-1" for="display-timer-switch">Display
+                                        Timer</label>
+                                </div>
+                                <div class="form-floating">
+                                    <select class="form-select" id="webcam-select"
+                                        aria-label="Floating label select example">
+                                    </select>
+                                    <label for="webcam-select">Used WebCam</label>
                                 </div>
                             </div>
                         </div>
@@ -110,7 +113,8 @@
                         </div>
                         <div>
                             <h3 class="fs-2 text-body-emphasis">Custom Image or Video</h3>
-                            <p>Use any image, video or even your webcam to create a puzzle! All the data is stored on your PC and will never reach the internet!</p>
+                            <p>Use any image, video or even your webcam to create a puzzle! All the data is stored on
+                                your PC and will never reach the internet!</p>
                         </div>
                     </div>
                     <div class="col d-flex align-items-start">
@@ -120,7 +124,8 @@
                         </div>
                         <div>
                             <h3 class="fs-2 text-body-emphasis">Custom Difficulty Level</h3>
-                            <p>Customize the Difficulty for your puzzle experience, but keep in mind puzzling on the web is hard!</p>
+                            <p>Customize the Difficulty for your puzzle experience, but keep in mind puzzling on the web
+                                is hard!</p>
                         </div>
                     </div>
                     <div class="col d-flex align-items-start">
@@ -130,7 +135,8 @@
                         </div>
                         <div>
                             <h3 class="fs-2 text-body-emphasis">Unlimited Fun!</h3>
-                            <p>Nothing is in your way of puzzling as many pictures or videos as you want! Just enjoy yourself!</p>
+                            <p>Nothing is in your way of puzzling as many pictures or videos as you want! Just enjoy
+                                yourself!</p>
                         </div>
                     </div>
                 </div>

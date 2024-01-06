@@ -19,6 +19,9 @@ const frameMS = 50;
 var timerIntervals = [];
 var axisLength = 0;
 
+// Stores the actual file that was uploaded most recently
+var file;
+
 // Set eventlisteners for all buttons & for upload handle
 inputFile.on("change", handleUpload);
 
@@ -36,7 +39,7 @@ $("#generate-btn").on("click", function () {
     // Define the axis length
     const tileAmount = $("#tileOptions").find(":selected").val();
     axisLength = Math.ceil(Math.sqrt(tileAmount));
-    if (videoTrack || inputFile.prop("files")[0].type == "video/mp4") {
+    if (videoTrack || file.type == "video/mp4") {
         drawVideoPuzzlePieces(video);
     } else {
         generatePuzzlePieces(puzzle[0]);
@@ -92,9 +95,39 @@ function drop(event) {
     checkTilePosition(draggedElement[0]);
 }
 
+
+/// Starts the timer for the puzzle
+function startTimer() {
+    if (timeStarted != Date.now()) {
+        timeStarted = Date.now();
+        clearInterval(timerInterval);
+    }
+
+    if (drawTimer) {
+        timer.parent().removeClass("d-none");
+        timerInterval = setInterval(countUp, 1000);
+    }
+}
+
+/// Used to count up the timer
+function countUp() {
+    const deltaTime = Date.now() - timeStarted;
+    const minutes = Math.floor(deltaTime / 1000 / 60);
+    const seconds = Math.floor(deltaTime / 1000 % 60);
+
+    const minuteString = minutes < 10 ? "0" + minutes : minutes;
+    const secondsString = seconds < 10 ? "0" + seconds : seconds;
+
+    timer.text(minuteString + ":" + secondsString);
+}
+
 // Handles the upload of an image
 function handleUpload() {
-    const file = inputFile.prop("files")[0];
+    // Check whether the upload actually happened, if not just return
+    if (inputFile.prop("files").length == 0) {
+        return;
+    }
+    file = inputFile.prop("files")[0];
     const inputURL = URL.createObjectURL(file);
     resetVideo();
     resetPuzzle();
@@ -114,7 +147,7 @@ function handleUpload() {
             $("#webcam-video").replaceWith(video);
             $("#generate-btn").removeClass("disabled");
         });
-    } else {
+    } else if (file.type.match("image/*")) {
         puzzle.attr("src", inputURL);
         puzzle.removeClass("d-none");
     }
@@ -268,35 +301,13 @@ function drawTileBorder(xCoord, yCoord, width, height, axisLength, context, rgbC
     }
 }
 
-/// Starts the timer for the puzzle
-function startTimer() {
-    if (timeStarted != Date.now()) {
-        timeStarted = Date.now();
-        clearInterval(timerInterval);
-    }
-
-    if (drawTimer) {
-        timer.parent().removeClass("d-none");
-        timerInterval = setInterval(countUp, 1000);
-    }
-}
-
-/// Used to count up the timer
-function countUp() {
-    const deltaTime = Date.now() - timeStarted;
-    const minutes = Math.floor(deltaTime / 1000 / 60);
-    const seconds = Math.floor(deltaTime / 1000 % 60);
-
-    const minuteString = minutes < 10 ? "0" + minutes : minutes;
-    const secondsString = seconds < 10 ? "0" + seconds : seconds;
-
-    timer.text(minuteString + ":" + secondsString);
-}
-
 /// Tries to get a webcam with hd quality, if not tries to get one with vga constraints or stops.
 function initializeWebcam() {
+    resetVideo();
+    const videoSource = videoSelect.value;
     const hdConstraints = {
         video: {
+            deviceId: videoSource ? { exact: videoSource } : undefined,
             width: 1280,
             height: 720,
         }
@@ -304,6 +315,7 @@ function initializeWebcam() {
 
     const vgaConstraints = {
         video: {
+            deviceId: videoSource ? { exact: videoSource } : undefined,
             width: 640,
             height: 480,
         }
@@ -315,15 +327,19 @@ function initializeWebcam() {
         resetPuzzle();
         setUpVideo();
     }, function (e) {
-        videoTrack.stop();
+        if (videoTrack) {
+            videoTrack.stop();
+        }
         navigator.getUserMedia(vgaConstraints, function (stream) {
             video.srcObject = stream;
             videoTrack = stream.getTracks()[0];
             resetPuzzle();
             setUpVideo();
         }, function (e) {
-            videoTrack.stop();
-            alert("Your browser doesn't support this feature or you blocked the webcam access.")
+            if (videoTrack) {
+                videoTrack.stop();
+            }
+            alert("Sorry, your webcam isn't supported or is unavailable.")
         });
     });
 }
@@ -367,10 +383,7 @@ function drawVideoPuzzlePieces(video) {
     // border color for the border
     const borderColor = "black";
 
-    // Css for the tile storage to have the right width and height
-    // tileStorage.css("width", (imageXDelta * axisLength + 24) + "%");
-    // tileStorage.css("height", (imageYDelta * axisLength + 24) + "%");
-
+    // Puzzle pattern for the randomly assigned puzzle pieces
     const puzzlePattern = getRandomIndizies2d(axisLength);
 
     for (let i = 0; i < axisLength; i++) {
@@ -460,7 +473,7 @@ function refreshTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLe
     tileCanvas.getContext("2d").restore();
 }
 
-// Resets the UI from an Image
+// Resets the UI & Puzzle from an Image
 function resetPuzzle() {
     puzzle.addClass("d-none");
     $("#tile-storage").removeAttr("style");
@@ -485,6 +498,38 @@ function resetVideo() {
     $("#tile-storage").removeClass("d-none");
     $("#generate-btn").addClass("disabled");
     $(".tile-placeholder").remove();
+    timerIntervals.forEach(function (interval) {
+        clearInterval(interval);
+    });
+    timerIntervals = [];
     timer.parent().addClass("d-none");
     clearInterval(timerInterval);
+}
+
+// Get the right webcam
+const videoSelect = $("#webcam-select")[0];
+
+// Sets all video devices with their right value in the settings pannel
+function getVideoDevices(deviceInfos) {
+    // Handles being called several times to update labels. Preserve values.
+    while (videoSelect.firstChild) {
+        videoSelect.removeChild(videoSelect.firstChild);
+    }
+    for (let i = 0; i !== deviceInfos.length; ++i) {
+        const deviceInfo = deviceInfos[i];
+        const option = document.createElement('option');
+        option.value = deviceInfo.deviceId;
+        if (deviceInfo.kind === 'videoinput') {
+            option.text = deviceInfo.label || `camera ${videoSelect.length + 1}`;
+            videoSelect.appendChild(option);
+        }
+    }
+}
+
+// Get all devices for camerra
+navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
+
+// Set a listener to change webcam source on the fly if selector changes
+videoSelect.onchange = function () {
+    initializeWebcam();
 }
