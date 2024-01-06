@@ -221,17 +221,14 @@ function generatePuzzlePieces(originalImage) {
             tile.setAttribute("class", "puzzle-tile");
             tile.setAttribute("draggable", true);
 
-            // Check whether tile was randomly placed in the right position
-            if (offsetX === j && offsetY === i) {
-                tile.setAttribute("draggable", false);
-                tile.setAttribute("landed", true);
-            }
 
             // Add event listeners for drag and drop
             tile.addEventListener('dragstart', drag);
             tile.addEventListener('dragover', allowDrop);
             tile.addEventListener('drop', drop);
             tileStorage[0].append(div);
+            // Check whether tile was randomly placed in the right position
+            checkTilePosition(tile);
             $("#tile-" + offsetY + "-" + offsetX).css("width", imageXDelta + "px");
             $("#tile-" + offsetY + "-" + offsetX).css("height", imageYDelta + "px");
         }
@@ -437,17 +434,12 @@ function drawVideoPuzzlePieces(video) {
             tile.setAttribute("offsetX", offsetX);
             tile.setAttribute("offsetY", offsetY);
 
-            // Check whether tile was randomly placed in the right position
-            if (offsetX === j && offsetY === i) {
-                tile.setAttribute("draggable", false);
-                tile.setAttribute("landed", true);
-            }
-
             // Add event listeners for drag and drop
             tile.addEventListener('dragstart', drag);
             tile.addEventListener('dragover', allowDrop);
             tile.addEventListener('drop', drop);
             tileStorage[0].append(div);
+            checkTilePosition(tile);
             $("#tile-" + offsetY + "-" + offsetX).css("width", imageXDelta + "px");
             $("#tile-" + offsetY + "-" + offsetX).css("height", imageYDelta + "px");
         }
@@ -595,7 +587,7 @@ function setNewWebcam() {
 // Show bootstrap toast
 function showModal() {
     const modalText = $("#success-modal p");
-    const timeSplit = timer.text() ? timer.text().split(":") : [0,0];
+    const timeSplit = timer.text() ? timer.text().split(":") : [0, 0];
     const minutes = parseInt(timeSplit[0]);
     const seconds = parseInt(timeSplit[1]);
     modalText.text("It only took you " + minutes + " minutes and " + seconds + " seconds to finish this puzzle!");
