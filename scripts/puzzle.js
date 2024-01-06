@@ -1,6 +1,6 @@
 // Variables used for the puzzle tiles
 const colorThief = new ColorThief();
-const inputImage = $("#file-upload");
+const inputFile = $("#file-upload");
 const puzzle = $("#puzzle-image");
 const timer = $("#timer");
 var drawBorder = true;
@@ -18,7 +18,7 @@ var videoTrack;
 const frameMS = 50;
 
 // Set eventlisteners for all buttons & for upload handle
-inputImage.on("change", handleUpload);
+inputFile.on("change", handleUpload);
 
 $("#generate-border-switch").on("click", function () {
     drawBorder = !drawBorder;
@@ -29,7 +29,7 @@ $("#display-timer-switch").on("click", function () {
 });
 
 $("#generate-btn").on("click", function () {
-    if (videoTrack) {
+    if (videoTrack || inputFile.prop("files")[0].type == "video/mp4") {
         drawVideoPuzzlePieces(video);
     } else {
         generatePuzzlePieces(puzzle[0]);
@@ -79,11 +79,36 @@ function drop(event) {
 
 // Handles the upload of an image
 function handleUpload() {
-    const inputImageURL = URL.createObjectURL(inputImage.prop("files")[0]);
-    puzzle.attr("src", inputImageURL);
-    puzzle.removeClass("d-none");
-    $("#generate-btn").removeClass("disabled");
+    const file = inputFile.prop("files")[0];
+    const inputURL = URL.createObjectURL(file);
     resetVideo();
+    if (file.type == "video/mp4") {
+        // If its a video, display and play it muted, allow to pause it
+        video.src = inputURL;
+        video.muted = true;
+        video.addEventListener("click", function () {
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        })
+        video.setAttribute("id", "webcam-video");
+        video.setAttribute("autoplay", true);
+        video.setAttribute("alt", "video-stream");
+        video.setAttribute("loop", true);
+        video.addEventListener('loadedmetadata', function () {
+            videoWidth = video.videoWidth;
+            videoHeight = video.videoHeight;
+            $("#webcam-video").parent().removeClass("d-none");
+            $("#webcam-video").replaceWith(video);
+            $("#generate-btn").removeClass("disabled");
+        });
+    } else {
+        puzzle.attr("src", inputURL);
+        puzzle.removeClass("d-none");
+    }
+    $("#generate-btn").removeClass("disabled");
 }
 
 // Generates the puzzle pieces for a given input image DOM
@@ -402,6 +427,9 @@ function resetVideo() {
     if (videoTrack) {
         if (videoTrack.stop) { videoTrack.stop(); }
         videoTrack = null;
+    }
+    if (video.src) {
+        video = document.createElement("video");
     }
     $("#webcam-video").parent().addClass("d-none");
     $("#tile-storage").removeAttr("style");
