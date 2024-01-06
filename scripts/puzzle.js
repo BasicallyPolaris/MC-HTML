@@ -82,7 +82,7 @@ function handleUpload() {
     const file = inputFile.prop("files")[0];
     const inputURL = URL.createObjectURL(file);
     resetVideo();
-    if (file.type == "video/mp4") {
+    if (file.type.match("video/*")) {
         // If its a video, display and play it muted, allow to pause it
         video.src = inputURL;
         video.muted = true;
