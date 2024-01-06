@@ -16,9 +16,13 @@ var videoHeight = 0;
 var video = document.createElement('video');
 var videoTrack;
 const frameMS = 50;
+var timerIntervals = [];
+var axisLength = 0;
 
 // Set eventlisteners for all buttons & for upload handle
 inputFile.on("change", handleUpload);
+
+window.addEventListener("resize", resizeTiles);
 
 $("#generate-border-switch").on("click", function () {
     drawBorder = !drawBorder;
@@ -29,6 +33,9 @@ $("#display-timer-switch").on("click", function () {
 });
 
 $("#generate-btn").on("click", function () {
+    // Define the axis length
+    const tileAmount = $("#tileOptions").find(":selected").val();
+    axisLength = Math.ceil(Math.sqrt(tileAmount));
     if (videoTrack || inputFile.prop("files")[0].type == "video/mp4") {
         drawVideoPuzzlePieces(video);
     } else {
@@ -116,10 +123,14 @@ function handleUpload() {
 
 // Generates the puzzle pieces for a given input image DOM
 function generatePuzzlePieces(originalImage) {
+    /// Make sure all previous puzzle pieces and intervals are cleansed
     $(".tile-placeholder").remove();
+    timerIntervals.forEach(function (interval) {
+        clearInterval(interval);
+    });
+    timerIntervals = [];
 
-    const tileAmount = $("#tileOptions").find(":selected").val();
-    const axisLength = Math.ceil(Math.sqrt(tileAmount));
+    // get the tile storage
     const tileStorage = $("#tile-storage");
 
     // delta values for the actual image cropping
@@ -334,28 +345,31 @@ function setUpVideo() {
 
 // Draws the puzzle pieces from the video
 function drawVideoPuzzlePieces(video) {
+    /// Make sure all previous puzzle pieces and intervals are cleansed
     $(".tile-placeholder").remove();
+    timerIntervals.forEach(function (interval) {
+        clearInterval(interval);
+    });
+    timerIntervals = [];
 
-    const tileAmount = $("#tileOptions").find(":selected").val();
-    const axisLength = Math.ceil(Math.sqrt(tileAmount));
+    // get the tile storage
     const tileStorage = $("#tile-storage");
 
     // delta values for the actual image cropping
     const deltaX = Math.ceil(videoWidth / axisLength);
     const deltaY = Math.ceil(videoHeight / axisLength);
 
-    const proportion = videoHeight / videoWidth;
-
     // delta values for the displayed images (need to do some rounding)
-    const imageXDelta = Math.floor($(".container").width() / axisLength);
-    const imageYDelta = Math.floor($(".container").width() * proportion / axisLength);
+    const proportion = videoHeight / videoWidth;
+    const imageXDelta = Math.floor($("#webcam-video").width() / axisLength);
+    const imageYDelta = Math.floor($("#webcam-video").width() * proportion / axisLength);
 
     // border color for the border
     const borderColor = "black";
 
     // Css for the tile storage to have the right width and height
-    tileStorage.css("width", (imageXDelta * axisLength + 24) + "px");
-    tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
+    // tileStorage.css("width", (imageXDelta * axisLength + 24) + "%");
+    // tileStorage.css("height", (imageYDelta * axisLength + 24) + "%");
 
     const puzzlePattern = getRandomIndizies2d(axisLength);
 
@@ -367,9 +381,9 @@ function drawVideoPuzzlePieces(video) {
             const tileCanvas = document.createElement("canvas");
             const tile = drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
 
-            setInterval(function () {
+            timerIntervals.push(setInterval(function () {
                 refreshTile(tile, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
-            }, frameMS);
+            }, frameMS));
 
             // Setup the div containing the tile with its coordinate
             const div = document.createElement("div");
@@ -406,6 +420,37 @@ function drawVideoPuzzlePieces(video) {
     }
 
     startTimer();
+}
+
+/// Used to resize all puzzle tiles
+function resizeTiles() {
+    const isVideo = !$("#webcam-video").parent().hasClass("d-none")
+    const isImage = !$("#puzzle-image").hasClass("d-none");
+    var imageXDelta = 0;
+    var imageYDelta = 0;
+    var tileStorageWidth = 0;
+    var tileStorageHeight = 0;
+
+    if (isVideo) {
+        imageXDelta = Math.floor($("#webcam-video").width() / axisLength);
+        imageYDelta = Math.floor($("#webcam-video").height() / axisLength);
+        tileStorageWidth = $("#webcam-video").width();
+        tileStorageHeight = $("#webcam-video").height();
+    } else if (isImage) {
+        imageXDelta = Math.floor($("#puzzle-image").width() / axisLength);
+        imageYDelta = Math.floor($("#puzzle-image").height() / axisLength);
+        tileStorageWidth = $("#puzzle-image").width();
+        tileStorageHeight = $("#puzzle-image").height();
+    }
+
+    if (isVideo || isImage) {
+        $(".puzzle-tile").css("width", imageXDelta + "px");
+        $(".puzzle-tile").css("height", imageYDelta + "px");
+        $(".puzzle-tile").parent().css("width", imageXDelta + "px");
+        $(".puzzle-tile").parent().css("height", imageYDelta + "px");
+        $("#tile-storage").css("width", (tileStorageWidth + 24) + "px");
+        $("#tile-storage").css("height", (tileStorageHeight + 24) + "px");
+    }
 }
 
 // Function used to redraw a tile from a video source
