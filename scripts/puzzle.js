@@ -45,7 +45,9 @@ window.addEventListener("resize", resizeTiles);
  */
 $("#generate-border-switch").on("click", function () {
     drawBorder = !drawBorder;
+    $("#puzzle-tile").forEach(function (tile) {
 
+    });
 });
 
 /**
@@ -69,7 +71,7 @@ $("#generate-btn").on("click", function () {
     axisLength = Math.ceil(Math.sqrt(tileAmount));
     rightPieces = 0;
     if (videoTrack || file.type == "video/mp4") {
-        drawVideoPuzzlePieces(video);
+        generateVideoPuzzlePieces(video);
     } else {
         generatePuzzlePieces(puzzle[0]);
     }
@@ -184,8 +186,6 @@ function handleUpload() {
 
     // Set variables and reset Video & Puzzle
     file = inputFile.prop("files")[0];
-    // Allow to reupload same image/video multiple times
-    inputFile[0].value = '';
     const inputURL = URL.createObjectURL(file);
     resetVideo();
     resetPuzzle();
@@ -264,6 +264,8 @@ function generatePuzzlePieces(originalImage) {
             tile.setAttribute("id", "tile-" + offsetY + "-" + offsetX);
             tile.setAttribute("class", "puzzle-tile");
             tile.setAttribute("draggable", true);
+            tile.setAttribute("offsetX", offsetX);
+            tile.setAttribute("offsetY", offsetY);
             // Set initital tile size
             tile.style.width = imageXDelta + "px";
             tile.style.height = imageYDelta + "px";
@@ -417,6 +419,8 @@ function drawTileBorder(context, width, height, xCoord, yCoord, axisLength, rgbC
  * @description 'Tries to get a webcam with hd quality, if not tries to get one with vga constraints, if both fails shows an alert.'
  */
 function initializeWebcam() {
+    // Allow to reupload the same image/video that was uploaded before
+    inputFile[0].value = '';
     resetVideo();
     const videoSource = webcamSelect.value;
     const hdConstraints = {
@@ -441,19 +445,14 @@ function initializeWebcam() {
         resetPuzzle();
         setUpVideo();
     }, function (e) {
-        if (videoTrack) {
-            videoTrack.stop();
-        }
         navigator.getUserMedia(vgaConstraints, function (stream) {
             video.srcObject = stream;
             videoTrack = stream.getTracks()[0];
             resetPuzzle();
             setUpVideo();
         }, function (e) {
-            if (videoTrack) {
-                videoTrack.stop();
-            }
-            alert("Sorry, your webcam isn't supported or is unavailable.")
+            resetVideo();
+            alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable.")
         });
     });
 }
@@ -477,11 +476,11 @@ function setUpVideo() {
 }
 
 /**
- * @func drawVideoPuzzlePieces
+ * @func generateVideoPuzzlePieces
  * @description 'Draws the puzzle pieces from the video'
  * @param video 'Video source for the puzzle'
  */
-function drawVideoPuzzlePieces(video) {
+function generateVideoPuzzlePieces(video) {
     /// Make sure all previous puzzle pieces and intervals are cleansed
     $(".tile-placeholder").remove();
     timerIntervals.forEach(function (interval) {
@@ -504,8 +503,6 @@ function drawVideoPuzzlePieces(video) {
     tileStorage.css("width", (imageXDelta * axisLength + 24) + "px");
     tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
 
-    console.log($("#video-stream").width());
-    console.log(imageXDelta * axisLength);
     // border color for the border
     const borderColor = "black";
 
@@ -578,13 +575,9 @@ function resizeTiles() {
         imageYDelta = Math.ceil($("#puzzle-image").height() / axisLength);
     }
 
-    console.log($("#video-stream").width());
-
     if (isVideo || isImage) {
         var tileStorageWidth = imageXDelta * axisLength + 24;
         var tileStorageHeight = imageYDelta * axisLength + 24;
-        console.log($("#video-stream").width());
-        console.log(tileStorageWidth);
         $(".puzzle-tile").css("width", imageXDelta + "px");
         $(".puzzle-tile").css("height", imageYDelta + "px");
         $(".puzzle-tile").parent().css("width", imageXDelta + "px");
@@ -631,14 +624,7 @@ function resetPuzzle() {
  * @description 'Resets the UI containing puzzle pieces and the currently displayed video, also stops the tracking of the camera'
  */
 function resetVideo() {
-    if (videoTrack) {
-        if (videoTrack.stop) { videoTrack.stop(); }
-        videoTrack = null;
-        $("#webcam-btn").removeClass("btn-danger");
-        $("#webcam-btn").addClass("btn-primary");
-        $("#webcam-btn a").text("Start");
-        $("#webcam-btn span").text("videocam");
-    }
+    resetWebcam();
     video = document.createElement("video");
     $("#video-stream").parent().addClass("d-none");
     $("#tile-storage").removeAttr("style");
@@ -651,6 +637,22 @@ function resetVideo() {
     timerIntervals = [];
     timer.parent().addClass("d-none");
     clearInterval(timerInterval);
+}
+
+
+/**
+ * @func resetWebcam
+ * @description 'Checks whether a webcam exists, if so stops the stream and resets the webcam button'
+ */
+function resetWebcam() {
+    if (videoTrack) {
+        if (videoTrack.stop) { videoTrack.stop(); }
+        videoTrack = null;
+        $("#webcam-btn").removeClass("btn-danger");
+        $("#webcam-btn").addClass("btn-primary");
+        $("#webcam-btn a").text("Start");
+        $("#webcam-btn span").text("videocam");
+    }
 }
 
 /**
@@ -725,16 +727,14 @@ function setNewWebcam() {
         videoTrack = stream.getTracks()[0];
         setUpVideo();
     }, function (e) {
-        if (videoTrack) {
-            videoTrack.stop();
-        }
         navigator.getUserMedia(vgaConstraints, function (stream) {
             video.srcObject = stream;
             videoTrack = stream.getTracks()[0];
             setUpVideo();
         }, function (e) {
+            // Only stop the old video track, you can still change to a valid one to keep puzzeling
             if (videoTrack) {
-                videoTrack.stop();
+                if (videoTrack.stop) { videoTrack.stop(); }
             }
             alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable.")
         });
