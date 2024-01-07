@@ -45,8 +45,7 @@
                                 class="material-symbols-outlined ps-2">upload</span></label>
                         <input id="file-upload" class="d-none" type="file" accept="image/png, image/jpeg, video/*" />
                         <div class="btn btn-primary btn-lg col align-items-center justify-content-center" type="button"
-                            id="webcam-btn">Webcam
-                            Video-Puzzle
+                            id="webcam-btn"><a>Start</a> Webcam-Puzzle
                             <span class="material-symbols-outlined ps-2">
                                 videocam
                             </span>
@@ -82,7 +81,7 @@
                                 <div class="form-check form-switch d-inline-flex">
                                     <input class="form-check-input" type="checkbox" role="switch"
                                         id="generate-border-switch" checked>
-                                    <label class="form-check-label ps-1" for="generate-border-switch">Generate
+                                    <label class="form-check-label ps-1" for="generate-border-switch">Draw
                                         Border</label>
                                 </div>
                                 <div class="form-check form-switch d-inline-flex">
@@ -95,7 +94,7 @@
                                     <select class="form-select" id="webcam-select"
                                         aria-label="Floating label select example">
                                     </select>
-                                    <label for="webcam-select">Used WebCam</label>
+                                    <label for="webcam-select">Active WebCam</label>
                                 </div>
                             </div>
                         </div>
@@ -147,7 +146,7 @@
                 <img src="" id="puzzle-image" class="img-fluid p-5 pb-4 d-none" alt="puzzle-preview">
             </div>
             <div class="container text-center py-4 d-none">
-                <div id="webcam-video" alt="webcam-preview"></div>
+                <div id="video-stream" alt="video-stream-preview"></div>
             </div>
             <div class="text-center pb-4 justify-content-center d-flex d-none ">
                 <h1 class="timer" id="timer">00:00</h1>

@@ -24,25 +24,46 @@ var axisLength = 0;
 const webcamSelect = $("#webcam-select")[0];
 const videoSource = webcamSelect.value;
 
-// Get all devices for camerra
+// Get all available webcam options and display them in the settings tab
 navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
 
 // Stores the actual file that was uploaded most recently
 var file;
 
-// Set eventlisteners for all buttons & for upload handle
+/**
+ * @description 'Listener to handle the file upload via button'
+ */
 inputFile.on("change", handleUpload);
 
+/**
+ * @description 'Listener used to dynamically resize all tiles with a window resize'
+ */
 window.addEventListener("resize", resizeTiles);
 
+/**
+ * @description 'Listener used to dynamically change whether the borders are shown on the puzzle tiles by configuring it in the settings tab'
+ */
 $("#generate-border-switch").on("click", function () {
     drawBorder = !drawBorder;
+
 });
 
+/**
+ * @description 'Listener used to dynamically show or hide the timer by configuring it in the settings tab'
+ */
 $("#display-timer-switch").on("click", function () {
     drawTimer = !drawTimer;
+    if (timerInterval && !drawTimer) {
+        timer.parent().addClass("d-none");
+    } else {
+        timer.parent().removeClass("d-none")
+    }
 });
 
+
+/**
+ * @description 'Listener to generate the puzzle pieces for a given input video or image'
+ */
 $("#generate-btn").on("click", function () {
     // Define the axis length
     const tileAmount = $("#tileOptions").find(":selected").val();
@@ -55,6 +76,10 @@ $("#generate-btn").on("click", function () {
     }
 });
 
+
+/**
+ * @description 'Listener for the webcam button, changes its appereance dynamically and stops or starts webcam tracking'
+ */
 $("#webcam-btn").on("click", function () {
     if (videoTrack) {
         if (videoTrack.stop) { videoTrack.stop(); }
@@ -65,7 +90,11 @@ $("#webcam-btn").on("click", function () {
     }
 });
 
-$("#webcam-video").parent().on("click", function () {
+
+/**
+ * @description 'Listener to allow for the video stream to be started and paused by clicking on it'
+ */
+$("#video-stream").parent().on("click", function () {
     if (video.paused) {
         video.play();
     } else {
@@ -73,15 +102,32 @@ $("#webcam-video").parent().on("click", function () {
     }
 });
 
-// Drag and Drop API
+
+/**
+ * @func allowDrop
+ * @description 'Implements the allowdrop functionality for the drag&drop-api'
+ * @param event 'drag&drop-api event'
+ */
 function allowDrop(event) {
     event.preventDefault();
 }
 
+
+/**
+ * @func drag
+ * @description 'Implements the functionality the drag functionality for drag & drop api of puzzle pieces, sets the data of the dragged element id'
+ * @param event 'drag&drop-api event'
+ */
 function drag(event) {
     event.dataTransfer.setData("text", event.target.id);
 }
 
+
+/**
+ * @func drop
+ * @description 'Implements the drop functionality for drag & drop api of puzzle pieces'
+ * @param event 'drag&drop-api event'
+ */
 function drop(event) {
     event.preventDefault();
     const draggedElementId = event.dataTransfer.getData("text");
@@ -105,7 +151,10 @@ function drop(event) {
 }
 
 
-/// Starts the timer for the puzzle
+/**
+ * @func startTimer
+ * @description 'Starts the timer for a puzzle and displays it between the preview and the actual puzzle'
+ */
 function startTimer() {
     if (timeStarted != Date.now()) {
         timeStarted = Date.now();
@@ -119,14 +168,10 @@ function startTimer() {
     }
 }
 
-// set the timer to its finish state when you succeed
-function finishTimer() {
-    clearInterval(timerInterval);
-    timer.addClass("timerSuccess");
-    showModal();
-}
-
-/// Used to count up the timer
+/**
+ * @func countUp
+ * @description 'Used by an interval to count up the displayed timer'
+ */
 function countUp() {
     const deltaTime = Date.now() - timeStarted;
     const minutes = Math.floor(deltaTime / 1000 / 60);
@@ -138,30 +183,36 @@ function countUp() {
     timer.text(minuteString + ":" + secondsString);
 }
 
-// Handles the upload of an image
+
+/**
+ * @func handleUpload
+ * @description 'Handles the upload interaction from the upload button'
+ */
 function handleUpload() {
     // Check whether the upload actually happened, if not just return
     if (inputFile.prop("files").length == 0) {
         return;
     }
+
+    // Set variables and reset Video & Puzzle
     file = inputFile.prop("files")[0];
     const inputURL = URL.createObjectURL(file);
     resetVideo();
     resetPuzzle();
+    // If its a video, display it
     if (file.type.match("video/*")) {
-        // If its a video, display and play it muted, allow to pause it
         video.src = inputURL;
         video.muted = true;
         video.classList.add("container");
-        video.setAttribute("id", "webcam-video");
+        video.setAttribute("id", "video-stream");
         video.setAttribute("autoplay", true);
         video.setAttribute("alt", "video-stream");
         video.setAttribute("loop", true);
         video.addEventListener('loadedmetadata', function () {
             videoWidth = video.videoWidth;
             videoHeight = video.videoHeight;
-            $("#webcam-video").parent().removeClass("d-none");
-            $("#webcam-video").replaceWith(video);
+            $("#video-stream").parent().removeClass("d-none");
+            $("#video-stream").replaceWith(video);
             $("#generate-btn").removeClass("disabled");
         });
     } else if (file.type.match("image/*")) {
@@ -171,7 +222,11 @@ function handleUpload() {
     $("#generate-btn").removeClass("disabled");
 }
 
-// Generates the puzzle pieces for a given input image DOM
+/**
+ * @func generatePuzzlePieces
+ * @description 'Generates the puzzle pieces for a given input image DOM'
+ * @param originalImage 'The input image for the puzzle'
+ */
 function generatePuzzlePieces(originalImage) {
     /// Make sure all previous puzzle pieces and intervals are cleansed
     $(".tile-placeholder").remove();
@@ -191,8 +246,8 @@ function generatePuzzlePieces(originalImage) {
     const imageXDelta = Math.ceil(puzzle.width() / axisLength);
     const imageYDelta = Math.ceil(puzzle.height() / axisLength);
 
-    tileStorage.css("width", (imageXDelta * axisLength + 24) + "px");
-    tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
+    tileStorage.css("width", (imageXDelta * axisLength) + "px");
+    tileStorage.css("height", (imageYDelta * axisLength) + "px");
 
     const puzzlePattern = getRandomIndizies2d(axisLength);
     const borderColor = colorThief.getColor(originalImage);
@@ -201,13 +256,11 @@ function generatePuzzlePieces(originalImage) {
         for (let j = 0; j < axisLength; j++) {
             const offsetX = puzzlePattern[i * axisLength + j][0];
             const offsetY = puzzlePattern[i * axisLength + j][1];
-
             const tileCanvas = document.createElement("canvas");
             const tile = drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, originalImage, axisLength, borderColor);
 
             // Setup the div containing the tile with its coordinate
             const div = document.createElement("div");
-
             div.classList.add("d-inline-block");
             div.classList.add("tile-placeholder")
             div.setAttribute("id", "divtile-" + i + "-" + j);
@@ -220,24 +273,39 @@ function generatePuzzlePieces(originalImage) {
             tile.setAttribute("id", "tile-" + offsetY + "-" + offsetX);
             tile.setAttribute("class", "puzzle-tile");
             tile.setAttribute("draggable", true);
-
+            // Set initital tile size
+            tile.style.width = imageXDelta + "px";
+            tile.style.height = imageYDelta + "px";
 
             // Add event listeners for drag and drop
             tile.addEventListener('dragstart', drag);
             tile.addEventListener('dragover', allowDrop);
             tile.addEventListener('drop', drop);
             tileStorage[0].append(div);
+
             // Check whether tile was randomly placed in the right position
             checkTilePosition(tile);
-            $("#tile-" + offsetY + "-" + offsetX).css("width", imageXDelta + "px");
-            $("#tile-" + offsetY + "-" + offsetX).css("height", imageYDelta + "px");
         }
     }
 
     startTimer();
 }
 
-// Returns an array that hold 2d tuples for an set square axis length
+/**
+ * @func finishPuzzle
+ * @description 'Used to stop the timer and show that you succeded, also shows the modal for success'
+ */
+function finishPuzzle() {
+    clearInterval(timerInterval);
+    timer.addClass("timerSuccess");
+    showModal();
+}
+
+/**
+ * @func getRandomIndizies2d
+ * @description 'Returns an Array with 2D-Coordinate touples for a fixed axislength with randomized value pairs'
+ * @param axisLength 'Axislength of the square 2D-Coordinate-System'
+ */
 function getRandomIndizies2d(axisLength) {
     const indizies = [];
     for (let i = 0; i < axisLength; i++) {
@@ -250,7 +318,11 @@ function getRandomIndizies2d(axisLength) {
     return indizies;
 }
 
-// Implementation of Durstenfeld shuffle
+/**
+ * @func shuffleArray
+ * @description 'Implementation of the Durstenfeld shuffle for array randomization'
+ * @param array 'The array that is supposed to be randomized'
+ */
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -258,7 +330,11 @@ function shuffleArray(array) {
     }
 }
 
-// Checks whether the current tile is in the right spot, if so remove the draggable property and play an animation
+/**
+ * @func checkTilePosition
+ * @description 'Checks whether a current tile is in the right position, if so plays an animation, stops the tile from being able to move again and runs some logic.'
+ * @param tile 'params0'
+ */
 function checkTilePosition(tile) {
     if (tile.parentNode.getAttribute("coordinate") === tile.getAttribute("id")) {
         tile.setAttribute("draggable", false);
@@ -266,52 +342,78 @@ function checkTilePosition(tile) {
         setInterval(function () {
             tile.removeAttribute("landed");
         }, 500);
+        // Increment number of right pieces, if it was the last piece finish the puzzle
         rightPieces++;
         if (rightPieces == Math.pow(axisLength, 2)) {
-            finishTimer();
+            finishPuzzle();
         }
     }
 }
 
-// Draw an image / video to a puzzle tile canvas using the offset and width and height
-function drawPuzzleTile(canvas, width, height, offsetX, offsetY, originalImage, tileAxis, borderColor) {
+/**
+ * @func drawPuzzleTile
+ * @description 'Draws a puzzle tile onto the given canvas'
+ * @param canvas 'Canvas used to display that puzzle tile'
+ * @param width 'width of a puzzle tile'
+ * @param height 'height of a puzzle tile'
+ * @param offsetX 'X-Offset on the X-Axis for the puzzle tile'
+ * @param offsetY 'Y-Offset on the X-Axis for the puzzle tile'
+ * @param inputImage 'The input image from which the tile is being drawn'
+ * @param axisLength 'The axis length of the puzzle'
+ * @param borderColor 'Color of the border for the puzzle'
+ */
+function drawPuzzleTile(canvas, width, height, offsetX, offsetY, inputImage, axisLength, borderColor) {
     canvas.width = width;
     canvas.height = height;
 
     canvasCtx = canvas.getContext("2d");
-    canvasCtx.drawImage(originalImage, offsetX * width, offsetY * height, width, height, 0, 0, width, height);
+    canvasCtx.drawImage(inputImage, offsetX * width, offsetY * height, width, height, 0, 0, width, height);
 
     if (drawBorder) {
-        drawTileBorder(offsetX, offsetY, width, height, tileAxis, canvasCtx, borderColor);
+        drawTileBorder(canvasCtx, width, height, offsetX, offsetY, axisLength, borderColor);
     }
 
     return canvas;
 }
 
-// Draws the borders of an image onto the image, dependent on the image position
-function drawTileBorder(xCoord, yCoord, width, height, axisLength, context, rgbColor) {
+/**
+ * @func drawTileBorder
+ * @description 'Draws the borders of an image onto the tile, if the tile is a borderpiece'
+ * @param xCoord 'x-coordinate of the tile'
+ * @param yCoord 'y-coordinate of the tile'
+ * @param width 'width of the tile'
+ * @param height 'height of the tile'
+ * @param axisLength 'axis length of the puzzle'
+ * @param context 'tile context'
+ * @param rgbColor 'params6'
+ */
+function drawTileBorder(context, width, height, xCoord, yCoord, axisLength, rgbColor) {
     context.strokeStyle = "rgb(" + rgbColor[0] + ", " + rgbColor[1] + ", " + rgbColor[2] + ")";
     context.lineWidth = Math.ceil(width * 0.10);
     context.beginPath();
 
+    // Left border piece
     if (xCoord === 0) {
         context.moveTo(0, 0);
         context.lineTo(0, height);
         context.stroke();
     }
 
+    // Right Border piece
     if (xCoord === axisLength - 1) {
         context.moveTo(width, 0);
         context.lineTo(width, height);
         context.stroke();
     }
 
+    // Top border piece
     if (yCoord === 0) {
         context.moveTo(0, 0);
         context.lineTo(width, 0);
         context.stroke();
     }
 
+    // Bottom border piece
     if (yCoord === axisLength - 1) {
         context.moveTo(0, height);
         context.lineTo(width, height);
@@ -319,7 +421,10 @@ function drawTileBorder(xCoord, yCoord, width, height, axisLength, context, rgbC
     }
 }
 
-/// Tries to get a webcam with hd quality, if not tries to get one with vga constraints or stops.
+/**
+ * @func initializeWebcam
+ * @description 'Tries to get a webcam with hd quality, if not tries to get one with vga constraints, if both fails shows an alert.'
+ */
 function initializeWebcam() {
     resetVideo();
     const videoSource = webcamSelect.value;
@@ -362,22 +467,29 @@ function initializeWebcam() {
     });
 }
 
-// Sets up the video preview for your camera / video
+/**
+ * @func setUpVideo
+ * @description 'Sets up the video preview for a webcam / video-file'
+ */
 function setUpVideo() {
-    video.setAttribute("id", "webcam-video");
+    video.setAttribute("id", "video-stream");
     video.setAttribute("autoplay", true);
     video.setAttribute("alt", "video-stream");
     video.classList.add("container");
     video.addEventListener('loadedmetadata', function () {
         videoWidth = video.videoWidth;
         videoHeight = video.videoHeight;
-        $("#webcam-video").parent().removeClass("d-none");
-        $("#webcam-video").replaceWith(video);
+        $("#video-stream").parent().removeClass("d-none");
+        $("#video-stream").replaceWith(video);
         $("#generate-btn").removeClass("disabled");
     });
 }
 
-// Draws the puzzle pieces from the video
+/**
+ * @func drawVideoPuzzlePieces
+ * @description 'Draws the puzzle pieces from the video'
+ * @param video 'Video source for the puzzle'
+ */
 function drawVideoPuzzlePieces(video) {
     /// Make sure all previous puzzle pieces and intervals are cleansed
     $(".tile-placeholder").remove();
@@ -395,8 +507,11 @@ function drawVideoPuzzlePieces(video) {
 
     // delta values for the displayed images (need to do some rounding)
     const proportion = videoHeight / videoWidth;
-    const imageXDelta = Math.floor($("#webcam-video").width() / axisLength);
-    const imageYDelta = Math.floor($("#webcam-video").width() * proportion / axisLength);
+    const imageXDelta = Math.floor($("#video-stream").width() / axisLength);
+    const imageYDelta = Math.floor($("#video-stream").width() * proportion / axisLength);
+
+    tileStorage.css("width", (imageXDelta * axisLength) + "px");
+    tileStorage.css("height", (imageYDelta * axisLength) + "px");
 
     // border color for the border
     const borderColor = "black";
@@ -409,6 +524,7 @@ function drawVideoPuzzlePieces(video) {
             const offsetX = puzzlePattern[i * axisLength + j][0];
             const offsetY = puzzlePattern[i * axisLength + j][1];
 
+            // Canvas used for the current tile
             const tileCanvas = document.createElement("canvas");
             const tile = drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
 
@@ -416,9 +532,8 @@ function drawVideoPuzzlePieces(video) {
                 refreshTile(tile, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
             }, frameMS));
 
-            // Setup the div containing the tile with its coordinate
+            // Setup the div containing the tile which stores extra information
             const div = document.createElement("div");
-
             div.classList.add("d-inline-block");
             div.classList.add("tile-placeholder")
             div.setAttribute("id", "divtile-" + i + "-" + j);
@@ -434,59 +549,76 @@ function drawVideoPuzzlePieces(video) {
             tile.setAttribute("offsetX", offsetX);
             tile.setAttribute("offsetY", offsetY);
 
+            // Set initital tile size
+            tile.style.width = imageXDelta + "px";
+            tile.style.height = imageYDelta + "px";
+
             // Add event listeners for drag and drop
             tile.addEventListener('dragstart', drag);
             tile.addEventListener('dragover', allowDrop);
             tile.addEventListener('drop', drop);
             tileStorage[0].append(div);
+
+            // Check whether the tile randomly started in the right spot, if so register it
             checkTilePosition(tile);
-            $("#tile-" + offsetY + "-" + offsetX).css("width", imageXDelta + "px");
-            $("#tile-" + offsetY + "-" + offsetX).css("height", imageYDelta + "px");
         }
     }
 
     startTimer();
 }
 
-/// Used to resize all puzzle tiles
+/**
+ * @func resizeTiles
+ * @description 'Dynamically resizes all tiles to make the puzzle match the size of the original image/video'
+ */
 function resizeTiles() {
-    const isVideo = !$("#webcam-video").parent().hasClass("d-none")
+    const isVideo = !$("#video-stream").parent().hasClass("d-none")
     const isImage = !$("#puzzle-image").hasClass("d-none");
     var imageXDelta = 0;
     var imageYDelta = 0;
-    var tileStorageWidth = 0;
-    var tileStorageHeight = 0;
 
     if (isVideo) {
-        imageXDelta = Math.floor($("#webcam-video").width() / axisLength);
-        imageYDelta = Math.floor($("#webcam-video").height() / axisLength);
-        tileStorageWidth = $("#webcam-video").width();
-        tileStorageHeight = $("#webcam-video").height();
+        imageXDelta = Math.ceil($("#video-stream").width() / axisLength);
+        imageYDelta = Math.ceil($("#video-stream").height() / axisLength);
     } else if (isImage) {
-        imageXDelta = Math.floor($("#puzzle-image").width() / axisLength);
-        imageYDelta = Math.floor($("#puzzle-image").height() / axisLength);
-        tileStorageWidth = $("#puzzle-image").width();
-        tileStorageHeight = $("#puzzle-image").height();
+        imageXDelta = Math.ceil($("#puzzle-image").width() / axisLength);
+        imageYDelta = Math.ceil($("#puzzle-image").height() / axisLength);
     }
 
     if (isVideo || isImage) {
+        var tileStorageWidth = imageXDelta * axisLength;
+        var tileStorageHeight = imageYDelta * axisLength;
         $(".puzzle-tile").css("width", imageXDelta + "px");
         $(".puzzle-tile").css("height", imageYDelta + "px");
         $(".puzzle-tile").parent().css("width", imageXDelta + "px");
         $(".puzzle-tile").parent().css("height", imageYDelta + "px");
-        $("#tile-storage").css("width", (tileStorageWidth + 24) + "px");
-        $("#tile-storage").css("height", (tileStorageHeight + 24) + "px");
+        $("#tile-storage").css("width", tileStorageWidth + "px");
+        $("#tile-storage").css("height", tileStorageHeight + "px");
     }
 }
 
-// Function used to redraw a tile from a video source
+/**
+ * @func refreshTile
+ * @description 'Refreshes a tiles frame from a video source'
+ * @param tileCanvas 'The tile canvas'
+ * @param deltaX 'Width of the drawn area'
+ * @param deltaY 'Height of the drawn area'
+ * @param offsetX 'X-Offset of the tile in the video'
+ * @param offsetY 'Y-Offset of the tile in the video'
+ * @param video 'Input Video'
+ * @param axisLength 'Axis length of the puzzle'
+ * @param borderColor 'Border color'
+ */
 function refreshTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor) {
     tileCanvas.getContext("2d").save();
     drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
     tileCanvas.getContext("2d").restore();
 }
 
-// Resets the UI & Puzzle from an Image
+/**
+ * @func resetPuzzle
+ * @description 'Resets the UI containing the puzzle pieces and the currently displayed image'
+ */
 function resetPuzzle() {
     puzzle.addClass("d-none");
     $("#tile-storage").removeAttr("style");
@@ -497,7 +629,10 @@ function resetPuzzle() {
     clearInterval(timerInterval);
 }
 
-// Resets the UI from the video and all puzzle pieces
+/**
+ * @func resetVideo
+ * @description 'Resets the UI containing puzzle pieces and the currently displayed video, also stops the tracking of the camera'
+ */
 function resetVideo() {
     if (videoTrack) {
         if (videoTrack.stop) { videoTrack.stop(); }
@@ -506,7 +641,7 @@ function resetVideo() {
     if (video.src) {
         video = document.createElement("video");
     }
-    $("#webcam-video").parent().addClass("d-none");
+    $("#video-stream").parent().addClass("d-none");
     $("#tile-storage").removeAttr("style");
     $("#tile-storage").removeClass("d-none");
     $("#generate-btn").addClass("disabled");
@@ -519,24 +654,44 @@ function resetVideo() {
     clearInterval(timerInterval);
 }
 
-// Sets all video devices with their right value in the settings pannel
+/**
+ * @func getVideoDevices
+ * @description 'Gets all video devices and places them as a selectable option with their right value in the settings pannel'
+ * @param deviceInfos 'Device Infos'
+ */
 function getVideoDevices(deviceInfos) {
     // Handles being called several times to update labels. Preserve values.
     while (webcamSelect.firstChild) {
         webcamSelect.removeChild(webcamSelect.firstChild);
     }
-    for (let i = 0; i !== deviceInfos.length; ++i) {
+
+    var hasCameraOption = false;
+
+    for (let i = 0; i !== deviceInfos.length; i++) {
         const deviceInfo = deviceInfos[i];
         const option = document.createElement('option');
         option.value = deviceInfo.deviceId;
         if (deviceInfo.kind === 'videoinput') {
-            option.text = deviceInfo.label || `camera ${webcamSelect.length + 1}`;
-            webcamSelect.appendChild(option);
+            if (deviceInfo.deviceId) {
+                hasCameraOption = true;
+                option.text = deviceInfo.label || `camera ${webcamSelect.length + 1}`;
+                webcamSelect.appendChild(option);
+            }
         }
+    }
+
+    // If there is no valid camera option, disable the webcam button
+    if (!hasCameraOption) {
+        $("#webcam-btn").addClass("disabled");
+    } else {
+        $("#webcam-btn").removeClass("disabled");
     }
 }
 
-// Set a listener to change webcam source on the fly if selector changes
+/**
+ * @func webcamSelect.onchange
+ * @description 'Add listener to change the webcam video source on the fly if it changes without removing the puzzle-tiles'
+ */
 webcamSelect.onchange = function () {
     // Only change to new webcam if already a webcam stream exists
     if (videoTrack) {
@@ -544,7 +699,10 @@ webcamSelect.onchange = function () {
     }
 }
 
-// Set new webcam on settings select change
+/**
+ * @func setNewWebcam
+ * @description 'Sets the current webcam as video source for the preview and current puzzle-tiles'
+ */
 function setNewWebcam() {
     const videoSource = webcamSelect.value;
     const hdConstraints = {
@@ -584,7 +742,10 @@ function setNewWebcam() {
     });
 }
 
-// Show bootstrap toast
+/**
+ * @func showModal
+ * @description 'Shows the bootstrap success modal with the right text on a successful run'
+ */
 function showModal() {
     const modalText = $("#success-modal p");
     const timeSplit = timer.text() ? timer.text().split(":") : [0, 0];

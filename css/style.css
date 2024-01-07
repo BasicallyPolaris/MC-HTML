@@ -1,8 +1,8 @@
 *,
 *::before,
 *::after {
-    cursor: default;
-    box-sizing: border-box;
+  cursor: default;
+  box-sizing: border-box;
 }
 
 body {
@@ -19,11 +19,12 @@ canvas {
 }
 
 .title {
-    cursor: default;
-    font-family: "Recursive", sans-serif;
+  cursor: default;
+  font-family: "Recursive", sans-serif;
 }
 
-.tile-storage {
+#tile-storage {
+  line-height: 1px!important;
   font-size: 0px;
 }
 
@@ -43,29 +44,29 @@ canvas {
 }
 
 .material-symbols-outlined {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 .icon-square {
-    padding: 5px;
-    border: 1px dashed black;
-    border-radius: 10px;
+  padding: 5px;
+  border: 1px dashed black;
+  border-radius: 10px;
 }
 
 .custom-file-upload {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .puzzle-tile[draggable="true"] {
-    cursor: grab;
+  cursor: grab;
 }
 
 .puzzle-tile[draggable="true"]:active {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 
 .puzzle-tile[landed="true"] {
-    animation: blink 0.5s linear;
+  animation: blink 0.5s linear;
 }
 
 @keyframes blink {
