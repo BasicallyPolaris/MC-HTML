@@ -674,11 +674,11 @@ function resetWebcam() {
     if (videoTrack) {
         if (videoTrack.stop) { videoTrack.stop(); }
         videoTrack = null;
-        $("#webcam-btn").removeClass("btn-danger");
-        $("#webcam-btn").addClass("btn-primary");
-        $("#webcam-btn a").text("Start");
-        $("#webcam-btn span").text("videocam");
     }
+    $("#webcam-btn").removeClass("btn-danger");
+    $("#webcam-btn").addClass("btn-primary");
+    $("#webcam-btn a").text("Start");
+    $("#webcam-btn span").text("videocam");
 }
 
 /**
