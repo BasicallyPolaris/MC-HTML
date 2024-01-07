@@ -19,6 +19,10 @@ var videoTrack;
 const frameMS = 50;
 var timerIntervals = [];
 var axisLength = 0;
+// Color of the tertiary background from bootstrap in light-mode
+const lightModeBorderColor = [233, 236, 239];
+// Color of the tertiary background from bootstrap in dark-mode
+const darkModeBorderColor = [52, 58, 64];
 
 // Webcam-Source selectors
 const webcamSelect = $("#webcam-select")[0];
@@ -57,7 +61,7 @@ $("#generate-border-switch").on("click", function () {
     var deltaX = 0;
     var deltaY = 0;
     var source;
-    var borderColor = "black";
+    var borderColor = isDarkMode() ? darkModeBorderColor : lightModeBorderColor;
 
     if (isVideo) {
         source = video;
@@ -480,7 +484,7 @@ function initializeWebcam() {
             setUpVideo();
         }, function (e) {
             resetVideo();
-            alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable.")
+            alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable. Try changing it in the settings.")
         });
     });
 }
@@ -532,7 +536,7 @@ function generateVideoPuzzlePieces(video) {
     tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
 
     // border color for the border
-    const borderColor = "black";
+    const borderColor = isDarkMode() ? darkModeBorderColor : lightModeBorderColor;
 
     // Puzzle pattern for the randomly assigned puzzle pieces
     const puzzlePattern = getRandomIndizies2d(axisLength);
@@ -547,7 +551,8 @@ function generateVideoPuzzlePieces(video) {
             drawPuzzleTile(tile, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
 
             timerIntervals.push(setInterval(function () {
-                refreshTile(tile, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
+                const border = isDarkMode() ? darkModeBorderColor : lightModeBorderColor;
+                refreshTile(tile, deltaX, deltaY, offsetX, offsetY, video, axisLength, border);
             }, frameMS));
 
             // Setup the div containing the tile which stores extra information
@@ -762,7 +767,7 @@ function setNewWebcam() {
             if (videoTrack) {
                 if (videoTrack.stop) { videoTrack.stop(); }
             }
-            alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable.")
+            alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable. Try changing it in the settings.")
         });
     });
 }
@@ -796,4 +801,13 @@ function showModal() {
     // Select the toast container
     const myModal = bootstrap.Modal.getOrCreateInstance("#success-modal");
     myModal.show();
+}
+
+
+/**
+ * @func isDarkMode
+ * @description 'Returns true if the website is in dark-mode, otherwise false'
+ */
+function isDarkMode() {
+    return $("html").attr("data-bs-theme") == "dark";
 }
