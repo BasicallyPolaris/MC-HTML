@@ -50,37 +50,7 @@ window.addEventListener("resize", resizeTiles);
  */
 $("#generate-border-switch").on("click", function () {
     drawBorder = !drawBorder;
-
-    // If no puzzle is drawn so far, no need to refresh it
-    if ($(".puzzle-tile").length === 0) {
-        return;
-    }
-
-    // Refresh the puzzle tiles
-    const isVideo = !$("#video-stream").parent().hasClass("d-none")
-    const isImage = !$("#puzzle-image").hasClass("d-none");
-    var deltaX = 0;
-    var deltaY = 0;
-    var source;
-    var borderColor = isDarkMode() ? darkModeBorderColor : lightModeBorderColor;
-
-    if (isVideo) {
-        source = video;
-        deltaX = Math.floor(videoWidth / axisLength);
-        deltaY = Math.floor(videoHeight / axisLength);
-    } else if (isImage) {
-        source = puzzle[0];
-        deltaX = Math.floor(source.naturalWidth / axisLength);
-        deltaY = Math.floor(source.naturalHeight / axisLength);
-        borderColor = colorThief.getColor(source);
-    }
-
-    $(".puzzle-tile").each(function () {
-        const tileIdSplit = $(this).attr("id").split("-");
-        const offsetX = tileIdSplit[2];
-        const offsetY = tileIdSplit[1];
-        refreshTile($(this)[0], deltaX, deltaY, offsetX, offsetY, source, axisLength, borderColor);
-    });
+    refreshTileBorders();
 });
 
 /**
@@ -98,13 +68,10 @@ $("#display-timer-switch").on("click", function () {
 /**
  * @description 'Listener used to dynamically show or hide the timer by configuring it in the settings tab'
  */
-$("#display-timer-switch").on("click", function () {
+$("#median-color-switch").on("click", function () {
     useMedianColor = !useMedianColor;
-    if (useMedianColor) {
-    } else {
-    }
+    refreshTileBorders();
 });
-
 
 /**
  * @description 'Listener to generate the puzzle pieces for a given input video or image'
@@ -281,7 +248,10 @@ function generatePuzzlePieces(originalImage) {
     tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
 
     const puzzlePattern = getRandomIndizies2d(axisLength);
-    const borderColor = colorThief.getColor(originalImage);
+    var borderColor = isDarkMode() ? darkModeBorderColor : lightModeBorderColor;
+    if (useMedianColor) {
+        borderColor = colorThief.getColor(originalImage);
+    }
 
     for (let i = 0; i < axisLength; i++) {
         for (let j = 0; j < axisLength; j++) {
@@ -329,7 +299,7 @@ function generatePuzzlePieces(originalImage) {
  */
 function finishPuzzle() {
     clearInterval(timerInterval);
-    timer.addClass("timerSuccess");
+    timer.addClass("timer-success");
     showModal();
 }
 
@@ -496,7 +466,7 @@ function initializeWebcam() {
                 })
                 .catch(function (vgaError) {
                     // Both HD and VGA constraints failed
-                    resetVideo();  
+                    resetVideo();
                     $("#webcam-btn").addClass("disabled");
                     alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable. Try changing it in the settings.")
                 });
@@ -728,7 +698,7 @@ function getVideoDevices(deviceInfos) {
     }
 
     // If there is no valid camera option, disable the webcam button
-    if (hasCameraOption) { 
+    if (hasCameraOption) {
         $("#webcam-btn").removeClass("disabled");
     }
 }
@@ -834,4 +804,44 @@ function showModal() {
  */
 function isDarkMode() {
     return $("html").attr("data-bs-theme") == "dark";
+}
+
+
+/**
+ * @func refreshTileBorders
+ * @description 'Function used to refresh the tile borders of an image'
+ */
+function refreshTileBorders() {
+    // If no puzzle is drawn so far, no need to refresh it
+    if ($(".puzzle-tile").length === 0) {
+        return;
+    }
+
+    // Refresh the puzzle tiles
+    const isVideo = !$("#video-stream").parent().hasClass("d-none")
+    const isImage = !$("#puzzle-image").hasClass("d-none");
+    var deltaX = 0;
+    var deltaY = 0;
+    var source;
+    var borderColor = isDarkMode() ? darkModeBorderColor : lightModeBorderColor;
+
+    if (isVideo) {
+        source = video;
+        deltaX = Math.floor(videoWidth / axisLength);
+        deltaY = Math.floor(videoHeight / axisLength);
+    } else if (isImage) {
+        source = puzzle[0];
+        deltaX = Math.floor(source.naturalWidth / axisLength);
+        deltaY = Math.floor(source.naturalHeight / axisLength);
+        if (useMedianColor) {
+            borderColor = colorThief.getColor(source);
+        }
+    }
+
+    $(".puzzle-tile").each(function () {
+        const tileIdSplit = $(this).attr("id").split("-");
+        const offsetX = tileIdSplit[2];
+        const offsetY = tileIdSplit[1];
+        refreshTile($(this)[0], deltaX, deltaY, offsetX, offsetY, source, axisLength, borderColor);
+    });
 }
