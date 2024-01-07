@@ -53,13 +53,12 @@ $("#generate-border-switch").on("click", function () {
  */
 $("#display-timer-switch").on("click", function () {
     drawTimer = !drawTimer;
-    if (timerInterval && !drawTimer) {
+    if (!timerInterval || !drawTimer) {
         timer.parent().addClass("d-none");
     } else {
         timer.parent().removeClass("d-none")
     }
 });
-
 
 /**
  * @description 'Listener to generate the puzzle pieces for a given input video or image'
@@ -76,20 +75,10 @@ $("#generate-btn").on("click", function () {
     }
 });
 
-
 /**
  * @description 'Listener for the webcam button, changes its appereance dynamically and stops or starts webcam tracking'
  */
-$("#webcam-btn").on("click", function () {
-    if (videoTrack) {
-        if (videoTrack.stop) { videoTrack.stop(); }
-        videoTrack = null;
-        resetVideo();
-    } else {
-        initializeWebcam();
-    }
-});
-
+$("#webcam-btn").on("click", toggleWebcam);
 
 /**
  * @description 'Listener to allow for the video stream to be started and paused by clicking on it'
@@ -101,7 +90,6 @@ $("#video-stream").parent().on("click", function () {
         video.pause();
     }
 });
-
 
 /**
  * @func allowDrop
@@ -196,9 +184,12 @@ function handleUpload() {
 
     // Set variables and reset Video & Puzzle
     file = inputFile.prop("files")[0];
+    // Allow to reupload same image/video multiple times
+    inputFile[0].value = '';
     const inputURL = URL.createObjectURL(file);
     resetVideo();
     resetPuzzle();
+
     // If its a video, display it
     if (file.type.match("video/*")) {
         video.src = inputURL;
@@ -246,8 +237,8 @@ function generatePuzzlePieces(originalImage) {
     const imageXDelta = Math.ceil(puzzle.width() / axisLength);
     const imageYDelta = Math.ceil(puzzle.height() / axisLength);
 
-    tileStorage.css("width", (imageXDelta * axisLength) + "px");
-    tileStorage.css("height", (imageYDelta * axisLength) + "px");
+    tileStorage.css("width", (imageXDelta * axisLength + 24) + "px");
+    tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
 
     const puzzlePattern = getRandomIndizies2d(axisLength);
     const borderColor = colorThief.getColor(originalImage);
@@ -510,9 +501,11 @@ function drawVideoPuzzlePieces(video) {
     const imageXDelta = Math.floor($("#video-stream").width() / axisLength);
     const imageYDelta = Math.floor($("#video-stream").width() * proportion / axisLength);
 
-    tileStorage.css("width", (imageXDelta * axisLength) + "px");
-    tileStorage.css("height", (imageYDelta * axisLength) + "px");
+    tileStorage.css("width", (imageXDelta * axisLength + 24) + "px");
+    tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
 
+    console.log($("#video-stream").width());
+    console.log(imageXDelta * axisLength);
     // border color for the border
     const borderColor = "black";
 
@@ -585,9 +578,13 @@ function resizeTiles() {
         imageYDelta = Math.ceil($("#puzzle-image").height() / axisLength);
     }
 
+    console.log($("#video-stream").width());
+
     if (isVideo || isImage) {
-        var tileStorageWidth = imageXDelta * axisLength;
-        var tileStorageHeight = imageYDelta * axisLength;
+        var tileStorageWidth = imageXDelta * axisLength + 24;
+        var tileStorageHeight = imageYDelta * axisLength + 24;
+        console.log($("#video-stream").width());
+        console.log(tileStorageWidth);
         $(".puzzle-tile").css("width", imageXDelta + "px");
         $(".puzzle-tile").css("height", imageYDelta + "px");
         $(".puzzle-tile").parent().css("width", imageXDelta + "px");
@@ -637,10 +634,12 @@ function resetVideo() {
     if (videoTrack) {
         if (videoTrack.stop) { videoTrack.stop(); }
         videoTrack = null;
+        $("#webcam-btn").removeClass("btn-danger");
+        $("#webcam-btn").addClass("btn-primary");
+        $("#webcam-btn a").text("Start");
+        $("#webcam-btn span").text("videocam");
     }
-    if (video.src) {
-        video = document.createElement("video");
-    }
+    video = document.createElement("video");
     $("#video-stream").parent().addClass("d-none");
     $("#tile-storage").removeAttr("style");
     $("#tile-storage").removeClass("d-none");
@@ -740,6 +739,22 @@ function setNewWebcam() {
             alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable.")
         });
     });
+}
+
+/**
+ * @func toggleWebcam
+ * @description 'Used to toggle the webcam and the webcam button + start/stop webcam tracking'
+ */
+function toggleWebcam() {
+    if (videoTrack) {
+        resetVideo();
+    } else {
+        initializeWebcam();
+        $("#webcam-btn").removeClass("btn-primary");
+        $("#webcam-btn").addClass("btn-danger");
+        $("#webcam-btn a").text("Stop");
+        $("#webcam-btn span").text("videocam_off");
+    }
 }
 
 /**
