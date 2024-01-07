@@ -95,6 +95,8 @@ $("#display-timer-switch").on("click", function () {
     }
 });
 
+
+
 /**
  * @description 'Listener to generate the puzzle pieces for a given input video or image'
  */
@@ -485,7 +487,8 @@ function initializeWebcam() {
                 })
                 .catch(function (vgaError) {
                     // Both HD and VGA constraints failed
-                    resetVideo();
+                    resetVideo();  
+                    $("#webcam-btn").addClass("disabled");
                     alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable. Try changing it in the settings.")
                 });
         })
@@ -702,8 +705,6 @@ function getVideoDevices(deviceInfos) {
         webcamSelect.removeChild(webcamSelect.firstChild);
     }
 
-    var hasCameraOption = false;
-
     for (let i = 0; i !== deviceInfos.length; i++) {
         const deviceInfo = deviceInfos[i];
         const option = document.createElement('option');
@@ -718,9 +719,7 @@ function getVideoDevices(deviceInfos) {
     }
 
     // If there is no valid camera option, disable the webcam button
-    if (!hasCameraOption) {
-        $("#webcam-btn").addClass("disabled");
-    } else {
+    if (hasCameraOption) { 
         $("#webcam-btn").removeClass("disabled");
     }
 }
