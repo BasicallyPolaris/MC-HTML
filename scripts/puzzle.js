@@ -27,8 +27,12 @@ const darkModeBorderColor = [52, 58, 64];
 // Webcam-Source selectors
 const webcamSelect = $("#webcam-select")[0];
 const videoSource = webcamSelect.value;
+navigator.getUserMedia  = navigator.getUserMedia ||
+                          navigator.webkitGetUserMedia ||
+                          navigator.mozGetUserMedia ||
+                          navigator.msGetUserMedia;
 
-// Get all available webcam options and display them in the settings tab
+// Get all available webcam options and diGsplay them in the settings tab
 navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
 
 // Stores the actual file that was uploaded most recently
@@ -135,7 +139,6 @@ function allowDrop(event) {
     event.preventDefault();
 }
 
-
 /**
  * @func drag
  * @description 'Implements the functionality the drag functionality for drag & drop api of puzzle pieces, sets the data of the dragged element id'
@@ -144,7 +147,6 @@ function allowDrop(event) {
 function drag(event) {
     event.dataTransfer.setData("text", event.target.id);
 }
-
 
 /**
  * @func drop
@@ -172,7 +174,6 @@ function drop(event) {
     checkTilePosition(droppedElement[0]);
     checkTilePosition(draggedElement[0]);
 }
-
 
 /**
  * @func startTimer
@@ -205,7 +206,6 @@ function countUp() {
 
     timer.text(minuteString + ":" + secondsString);
 }
-
 
 /**
  * @func handleUpload
@@ -670,7 +670,6 @@ function resetVideo() {
     clearInterval(timerInterval);
 }
 
-
 /**
  * @func resetWebcam
  * @description 'Checks whether a webcam exists, if so stops the stream and resets the webcam button'
@@ -802,7 +801,6 @@ function showModal() {
     const myModal = bootstrap.Modal.getOrCreateInstance("#success-modal");
     myModal.show();
 }
-
 
 /**
  * @func isDarkMode
