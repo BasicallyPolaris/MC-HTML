@@ -5,10 +5,12 @@
 - Supports both Image and Video input and displays it dynamically on the tiles
 - Supports Video input from Camera via WebRTC
 - Tiles dynamically resize with the browser
+- Dark mode switch
+- Use custom median color for image borders or change to the classic
+- Use custom color for borders
 
 ### Planned Features
-- Dark mode switch
-- Also dynamically remove the border from static image tiles
+- Currently none! :)
 
 ### Impossible to implement
 - Safari mobile support for video tiles (can't see the safari logs due to lack of macbook)
