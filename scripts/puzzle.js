@@ -45,8 +45,37 @@ window.addEventListener("resize", resizeTiles);
  */
 $("#generate-border-switch").on("click", function () {
     drawBorder = !drawBorder;
-    $("#puzzle-tile").forEach(function (tile) {
 
+    // If no puzzle is drawn so far, no need to refresh it
+    if ($(".puzzle-tile").length === 0) {
+        return;
+    }
+
+    // Refresh the puzzle tiles
+    const isVideo = !$("#video-stream").parent().hasClass("d-none")
+    const isImage = !$("#puzzle-image").hasClass("d-none");
+    var deltaX = 0;
+    var deltaY = 0;
+    var source;
+    var borderColor = "black";
+
+    if (isVideo) {
+        source = video;
+        deltaX = Math.ceil(videoWidth / axisLength);
+        deltaY = Math.ceil(videoHeight / axisLength);
+    } else if (isImage) {
+        source = puzzle[0];
+        deltaX = Math.ceil(source.naturalWidth / axisLength);
+        deltaY = Math.ceil(source.naturalHeight / axisLength);
+        borderColor = colorThief.getColor(source);
+    }
+
+
+    $(".puzzle-tile").each(function () {
+        const tileIdSplit = $(this).attr("id").split("-");
+        const offsetX = tileIdSplit[2];
+        const offsetY = tileIdSplit[1];
+        refreshTile($(this)[0], deltaX, deltaY, offsetX, offsetY, source, axisLength, borderColor);
     });
 });
 
@@ -247,8 +276,8 @@ function generatePuzzlePieces(originalImage) {
         for (let j = 0; j < axisLength; j++) {
             const offsetX = puzzlePattern[i * axisLength + j][0];
             const offsetY = puzzlePattern[i * axisLength + j][1];
-            const tileCanvas = document.createElement("canvas");
-            const tile = drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, originalImage, axisLength, borderColor);
+            const tile = document.createElement("canvas");
+            drawPuzzleTile(tile, deltaX, deltaY, offsetX, offsetY, originalImage, axisLength, borderColor);
 
             // Setup the div containing the tile with its coordinate
             const div = document.createElement("div");
@@ -264,8 +293,7 @@ function generatePuzzlePieces(originalImage) {
             tile.setAttribute("id", "tile-" + offsetY + "-" + offsetX);
             tile.setAttribute("class", "puzzle-tile");
             tile.setAttribute("draggable", true);
-            tile.setAttribute("offsetX", offsetX);
-            tile.setAttribute("offsetY", offsetY);
+
             // Set initital tile size
             tile.style.width = imageXDelta + "px";
             tile.style.height = imageYDelta + "px";
@@ -351,33 +379,31 @@ function checkTilePosition(tile) {
  * @param height 'height of a puzzle tile'
  * @param offsetX 'X-Offset on the X-Axis for the puzzle tile'
  * @param offsetY 'Y-Offset on the X-Axis for the puzzle tile'
- * @param inputImage 'The input image from which the tile is being drawn'
+ * @param source 'The input image from which the tile is being drawn'
  * @param axisLength 'The axis length of the puzzle'
  * @param borderColor 'Color of the border for the puzzle'
  */
-function drawPuzzleTile(canvas, width, height, offsetX, offsetY, inputImage, axisLength, borderColor) {
+function drawPuzzleTile(canvas, width, height, offsetX, offsetY, source, axisLength, borderColor) {
     canvas.width = width;
     canvas.height = height;
 
     canvasCtx = canvas.getContext("2d");
-    canvasCtx.drawImage(inputImage, offsetX * width, offsetY * height, width, height, 0, 0, width, height);
+    canvasCtx.drawImage(source, offsetX * width, offsetY * height, width, height, 0, 0, width, height);
 
     if (drawBorder) {
         drawTileBorder(canvasCtx, width, height, offsetX, offsetY, axisLength, borderColor);
     }
-
-    return canvas;
 }
 
 /**
  * @func drawTileBorder
  * @description 'Draws the borders of an image onto the tile, if the tile is a borderpiece'
+ * @param context 'tile context'
  * @param xCoord 'x-coordinate of the tile'
  * @param yCoord 'y-coordinate of the tile'
  * @param width 'width of the tile'
  * @param height 'height of the tile'
  * @param axisLength 'axis length of the puzzle'
- * @param context 'tile context'
  * @param rgbColor 'params6'
  */
 function drawTileBorder(context, width, height, xCoord, yCoord, axisLength, rgbColor) {
@@ -386,32 +412,34 @@ function drawTileBorder(context, width, height, xCoord, yCoord, axisLength, rgbC
     context.beginPath();
 
     // Left border piece
-    if (xCoord === 0) {
+    if (xCoord == 0) {
         context.moveTo(0, 0);
         context.lineTo(0, height);
         context.stroke();
     }
 
     // Right Border piece
-    if (xCoord === axisLength - 1) {
+    if (xCoord == axisLength - 1) {
         context.moveTo(width, 0);
         context.lineTo(width, height);
         context.stroke();
     }
 
     // Top border piece
-    if (yCoord === 0) {
+    if (yCoord == 0) {
         context.moveTo(0, 0);
         context.lineTo(width, 0);
         context.stroke();
     }
 
     // Bottom border piece
-    if (yCoord === axisLength - 1) {
+    if (yCoord == axisLength - 1) {
         context.moveTo(0, height);
         context.lineTo(width, height);
         context.stroke();
     }
+
+    context.closePath();
 }
 
 /**
@@ -515,8 +543,8 @@ function generateVideoPuzzlePieces(video) {
             const offsetY = puzzlePattern[i * axisLength + j][1];
 
             // Canvas used for the current tile
-            const tileCanvas = document.createElement("canvas");
-            const tile = drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
+            const tile = document.createElement("canvas");
+            drawPuzzleTile(tile, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
 
             timerIntervals.push(setInterval(function () {
                 refreshTile(tile, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
@@ -536,8 +564,6 @@ function generateVideoPuzzlePieces(video) {
             tile.setAttribute("id", "tile-" + offsetY + "-" + offsetX);
             tile.setAttribute("class", "puzzle-tile");
             tile.setAttribute("draggable", true);
-            tile.setAttribute("offsetX", offsetX);
-            tile.setAttribute("offsetY", offsetY);
 
             // Set initital tile size
             tile.style.width = imageXDelta + "px";
@@ -589,19 +615,19 @@ function resizeTiles() {
 
 /**
  * @func refreshTile
- * @description 'Refreshes a tiles frame from a video source'
- * @param tileCanvas 'The tile canvas'
+ * @description 'Refreshes a tiles frame from a Media-DOM source'
+ * @param tileCanvas 'Canvas of a tile'
  * @param deltaX 'Width of the drawn area'
  * @param deltaY 'Height of the drawn area'
  * @param offsetX 'X-Offset of the tile in the video'
  * @param offsetY 'Y-Offset of the tile in the video'
- * @param video 'Input Video'
+ * @param source 'Input Source'
  * @param axisLength 'Axis length of the puzzle'
  * @param borderColor 'Border color'
  */
-function refreshTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor) {
+function refreshTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, source, axisLength, borderColor) {
     tileCanvas.getContext("2d").save();
-    drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, video, axisLength, borderColor);
+    drawPuzzleTile(tileCanvas, deltaX, deltaY, offsetX, offsetY, source, axisLength, borderColor);
     tileCanvas.getContext("2d").restore();
 }
 
