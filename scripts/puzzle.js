@@ -27,13 +27,6 @@ const darkModeBorderColor = [52, 58, 64];
 // Webcam-Source selectors
 const webcamSelect = $("#webcam-select")[0];
 const videoSource = webcamSelect.value;
-navigator.getUserMedia  = navigator.getUserMedia ||
-                          navigator.webkitGetUserMedia ||
-                          navigator.mozGetUserMedia ||
-                          navigator.msGetUserMedia;
-
-// Get all available webcam options and diGsplay them in the settings tab
-navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
 
 // Stores the actual file that was uploaded most recently
 var file;
@@ -471,22 +464,33 @@ function initializeWebcam() {
         }
     }
 
-    navigator.getUserMedia(hdConstraints, function (stream) {
-        video.srcObject = stream;
-        videoTrack = stream.getTracks()[0];
-        resetPuzzle();
-        setUpVideo();
-    }, function (e) {
-        navigator.getUserMedia(vgaConstraints, function (stream) {
+    navigator.mediaDevices.getUserMedia(hdConstraints)
+        .then(function (stream) {
             video.srcObject = stream;
             videoTrack = stream.getTracks()[0];
             resetPuzzle();
             setUpVideo();
-        }, function (e) {
-            resetVideo();
-            alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable. Try changing it in the settings.")
+        })
+        .catch(function (hdError) {
+            // If HD constraints fail, try VGA constraints
+            navigator.mediaDevices.getUserMedia(vgaConstraints)
+                .then(function (stream) {
+                    video.srcObject = stream;
+                    videoTrack = stream.getTracks()[0];
+                    resetPuzzle();
+                    setUpVideo();
+                })
+                .catch(function (vgaError) {
+                    // Both HD and VGA constraints failed
+                    resetVideo();
+                    alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable. Try changing it in the settings.")
+                });
+        })
+        .finally(function () {
+            // This block will execute regardless of whether getUserMedia succeeded or failed
+            console.log(navigator.mediaDevices.enumerateDevices());
+            navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
         });
-    });
 }
 
 /**
@@ -716,6 +720,18 @@ function getVideoDevices(deviceInfos) {
         $("#webcam-btn").addClass("disabled");
     } else {
         $("#webcam-btn").removeClass("disabled");
+    }
+}
+
+
+/**
+ * @func closeStream
+ * @description 'Close the acquired stream'
+ * @param stream 'The stream'
+ */
+function closeStream(stream) {
+    if (stream.getTracks[0].stop) {
+        stream.getTracks()[0].stop();
     }
 }
 
