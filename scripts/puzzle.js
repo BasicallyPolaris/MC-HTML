@@ -61,12 +61,12 @@ $("#generate-border-switch").on("click", function () {
 
     if (isVideo) {
         source = video;
-        deltaX = Math.ceil(videoWidth / axisLength);
-        deltaY = Math.ceil(videoHeight / axisLength);
+        deltaX = Math.floor(videoWidth / axisLength);
+        deltaY = Math.floor(videoHeight / axisLength);
     } else if (isImage) {
         source = puzzle[0];
-        deltaX = Math.ceil(source.naturalWidth / axisLength);
-        deltaY = Math.ceil(source.naturalHeight / axisLength);
+        deltaX = Math.floor(source.naturalWidth / axisLength);
+        deltaY = Math.floor(source.naturalHeight / axisLength);
         borderColor = colorThief.getColor(source);
     }
 
@@ -97,7 +97,7 @@ $("#display-timer-switch").on("click", function () {
 $("#generate-btn").on("click", function () {
     // Define the axis length
     const tileAmount = $("#tileOptions").find(":selected").val();
-    axisLength = Math.ceil(Math.sqrt(tileAmount));
+    axisLength = Math.floor(Math.sqrt(tileAmount));
     rightPieces = 0;
     if (videoTrack || file.type == "video/mp4") {
         generateVideoPuzzlePieces(video);
@@ -259,12 +259,12 @@ function generatePuzzlePieces(originalImage) {
     const tileStorage = $("#tile-storage");
 
     // delta values for the actual image cropping
-    const deltaX = Math.ceil(originalImage.naturalWidth / axisLength);
-    const deltaY = Math.ceil(originalImage.naturalHeight / axisLength);
+    const deltaX = Math.floor(originalImage.naturalWidth / axisLength);
+    const deltaY = Math.floor(originalImage.naturalHeight / axisLength);
 
     // delta values for the displayed images (need to do some rounding)
-    const imageXDelta = Math.ceil(puzzle.width() / axisLength);
-    const imageYDelta = Math.ceil(puzzle.height() / axisLength);
+    const imageXDelta = Math.floor(puzzle.width() / axisLength);
+    const imageYDelta = Math.floor(puzzle.height() / axisLength);
 
     tileStorage.css("width", (imageXDelta * axisLength + 24) + "px");
     tileStorage.css("height", (imageYDelta * axisLength + 24) + "px");
@@ -520,8 +520,8 @@ function generateVideoPuzzlePieces(video) {
     const tileStorage = $("#tile-storage");
 
     // delta values for the actual image cropping
-    const deltaX = Math.ceil(videoWidth / axisLength);
-    const deltaY = Math.ceil(videoHeight / axisLength);
+    const deltaX = Math.floor(videoWidth / axisLength);
+    const deltaY = Math.floor(videoHeight / axisLength);
 
     // delta values for the displayed images (need to do some rounding)
     const proportion = videoHeight / videoWidth;
@@ -594,11 +594,11 @@ function resizeTiles() {
     var imageYDelta = 0;
 
     if (isVideo) {
-        imageXDelta = Math.ceil($("#video-stream").width() / axisLength);
-        imageYDelta = Math.ceil($("#video-stream").height() / axisLength);
+        imageXDelta = Math.floor($("#video-stream").width() / axisLength);
+        imageYDelta = Math.floor($("#video-stream").height() / axisLength);
     } else if (isImage) {
-        imageXDelta = Math.ceil($("#puzzle-image").width() / axisLength);
-        imageYDelta = Math.ceil($("#puzzle-image").height() / axisLength);
+        imageXDelta = Math.floor($("#puzzle-image").width() / axisLength);
+        imageYDelta = Math.floor($("#puzzle-image").height() / axisLength);
     }
 
     if (isVideo || isImage) {
