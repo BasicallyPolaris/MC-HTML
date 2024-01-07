@@ -5,6 +5,7 @@ const puzzle = $("#puzzle-image");
 const timer = $("#timer");
 var drawBorder = true;
 var drawTimer = true;
+var useMedianColor = true;
 
 // Variables used for the Timer
 var timeStarted;
@@ -74,7 +75,6 @@ $("#generate-border-switch").on("click", function () {
         borderColor = colorThief.getColor(source);
     }
 
-
     $(".puzzle-tile").each(function () {
         const tileIdSplit = $(this).attr("id").split("-");
         const offsetX = tileIdSplit[2];
@@ -95,6 +95,15 @@ $("#display-timer-switch").on("click", function () {
     }
 });
 
+/**
+ * @description 'Listener used to dynamically show or hide the timer by configuring it in the settings tab'
+ */
+$("#display-timer-switch").on("click", function () {
+    useMedianColor = !useMedianColor;
+    if (useMedianColor) {
+    } else {
+    }
+});
 
 
 /**
