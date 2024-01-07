@@ -31,6 +31,9 @@ const videoSource = webcamSelect.value;
 // Stores the actual file that was uploaded most recently
 var file;
 
+// Enumerate devices if you already have the permission for them
+navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
+
 /**
  * @description 'Listener to handle the file upload via button'
  */
@@ -488,7 +491,6 @@ function initializeWebcam() {
         })
         .finally(function () {
             // This block will execute regardless of whether getUserMedia succeeded or failed
-            console.log(navigator.mediaDevices.enumerateDevices());
             navigator.mediaDevices.enumerateDevices().then(getVideoDevices);
         });
 }
