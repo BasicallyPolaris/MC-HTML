@@ -10,6 +10,7 @@
 - Use custom color for borders
 
 ### Planned Features
+- Maybe a different view mode (unlikely, tried it but the normal this one felt best)
 - Currently none! :)
 
 ### Impossible to implement
