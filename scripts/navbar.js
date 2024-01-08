@@ -6,6 +6,9 @@ insertNavbar();
  * @description 'Inserts the navbar at the top of the page and checks for prefered darkmode'
  */
 function insertNavbar() {
+    if (window.location && !window.location.protocol.toString().includes("http")) {
+        alert("Please open the index.html via http/https to allow XMLHttpRequests for the navbar and footer to be imported via script.");
+    }
     $("#content").prepend("<div id='navbar-placeholder'></div>");
     $.get("nav.html", function (data) {
         $("#navbar-placeholder").replaceWith(data);
