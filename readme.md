@@ -18,6 +18,10 @@
 - Safari mobile support for video tiles (can't see the safari logs due to lack of macbook)
 - Didn't test mobile support on Android devices
 
+### Notable
+- As the header and footer are designed to be imported on multiple sites by just including the import script you need to open the website via a local hosted server so that the header and footer can be imported by the scripts
+- Always include the `footer.js` before the `navbar.js`, as the navbar script modifies elements of the footer so it has to be loaded after (include order can be copied from the `index.html`) 
+
 ---
 GitHub Link: https://github.com/BasicallyPolaris/MC-HTML
 By Soheel Dario Aghadavoodi Jolfaei
