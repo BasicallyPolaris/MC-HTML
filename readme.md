@@ -6,6 +6,7 @@
 - Supports Video input from Camera via WebRTC
 - Tiles dynamically resize with the browser
 - Dark mode switch
+- Auto detect prefered user-theme and select it on start
 - Use custom median color for image borders or change to the classic
 - Use custom color for borders
 
