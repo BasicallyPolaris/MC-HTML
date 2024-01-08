@@ -534,6 +534,8 @@ function generatePuzzlePieces(source, targetWidth, targetHeight) {
 
             // Add event listeners for drag and drop
             tile.addEventListener('dragstart', drag);
+            tile.addEventListener('dragover', allowDrop);
+            tile.addEventListener('drop', drop);
 
             // Append the elements in the right order
             puzzleContainerElement.append(tile);
