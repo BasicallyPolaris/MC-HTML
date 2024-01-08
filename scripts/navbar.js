@@ -1,6 +1,5 @@
 insertNavbar();
 
-
 /**
  * @func insertNavbar
  * @description 'Inserts the navbar at the top of the page and checks for prefered darkmode'

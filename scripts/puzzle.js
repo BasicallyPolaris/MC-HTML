@@ -64,7 +64,6 @@ function setUpEventListeners() {
         }
     }
 
-
     /**
      * @func fps-select.onchange
      * @description 'Listener to change framerate of video dependent on fps-select, only if video-puzzle is present'
