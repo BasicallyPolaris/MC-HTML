@@ -1,6 +1,9 @@
 insertFooter();
 
-/* Used to insert the footer at the end of a page */
+/**
+ * @func insertFooter
+ * @description 'Insers the footer at the bottom of the page html'
+ */
 function insertFooter() {
     $("#content").after("<div id='footer-placeholder'></div>");
     $.get("footer.html", function(data) {

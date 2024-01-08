@@ -18,4 +18,5 @@
 - Didn't test mobile support on Android devices
 
 ---
+GitHub Link: https://github.com/BasicallyPolaris/MC-HTML
 By Soheel Dario Aghadavoodi Jolfaei

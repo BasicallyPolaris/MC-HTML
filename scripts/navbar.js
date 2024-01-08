@@ -1,6 +1,10 @@
 insertNavbar();
 
-/* Used to insert the navbar at the top of a page */
+
+/**
+ * @func insertNavbar
+ * @description 'Inserts the navbar at the top of the page and checks for prefered darkmode'
+ */
 function insertNavbar() {
     $("#content").prepend("<div id='navbar-placeholder'></div>");
     $.get("nav.html", function (data) {
@@ -8,8 +12,18 @@ function insertNavbar() {
 
         // 'Listener used for the dark mode toggle'
         $("#dark-mode-toggle").on("click", toggleDarkMode);
-    })
+        detectDarkMode();
+    });
+}
 
+/**
+ * @func detectDarkMode
+ * @description 'Detects whether the user prefers dark mode and if so set's it'
+ */
+function detectDarkMode() {
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        toggleDarkMode();
+    }
 }
 
 /**
@@ -20,7 +34,7 @@ function toggleDarkMode() {
     const toggleButton = $("#dark-mode-toggle");
 
     // Currently in light mode
-    if (toggleButton.hasClass("btn-light")) {
+    if ($("html").attr("data-bs-theme") === "light") {
         // Change button in navbar
         toggleButton.removeClass("btn-light");
         toggleButton.addClass("btn-dark");
