@@ -10,6 +10,18 @@ body {
   flex-direction: column;
 }
 
+/* Fixes canvas ghost lines as they are interpreted as characters */
+canvas {
+  vertical-align: bottom;
+}
+
+/* Fixes canvas ghost lines as they are interpreted as characters */
+#puzzle-container {
+  line-height: 1px!important;
+  font-size: 0px;
+}
+
+/* Places footer at the bottom of the viewport */
 #content {
   flex: 1 0 auto;
 }
@@ -19,11 +31,6 @@ body {
   font-family: "Recursive", sans-serif;
 }
 
-/* Fixes canvas ghost lines as they are interpreted as characters */
-#puzzle-container {
-  line-height: 1px!important;
-  font-size: 0px;
-}
 
 .timer {
   width: 150px;
