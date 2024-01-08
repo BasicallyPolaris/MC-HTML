@@ -18,7 +18,6 @@ var videoWidth = 0;
 var videoHeight = 0;
 var video = document.createElement('video');
 var videoTrack;
-const frameMS = 50;
 var videoRefreshInterval;
 var axisLength = 0;
 // Color of the tertiary background from bootstrap in light-mode
@@ -56,7 +55,7 @@ function setUpEventListeners() {
 
     /**
      * @func webcamSelect.onchange
-     * @description 'Add listener to change the webcam video source on the fly if it changes without removing the puzzle-tiles'
+     * @description 'Listener to change the webcam video source on the fly if it changes without removing the puzzle-tiles'
      */
     webcamSelect.onchange = function () {
         // Only change to new webcam if already a webcam stream exists
@@ -64,6 +63,20 @@ function setUpEventListeners() {
             setNewWebcam();
         }
     }
+
+
+    /**
+     * @func fps-select.onchange
+     * @description 'Listener to change framerate of video dependent on fps-select, only if video-puzzle is present'
+     */
+    $("#fps-select").on("change", function () {
+        if (videoRefreshInterval) {
+            clearInterval(videoRefreshInterval);
+            videoRefreshInterval = setInterval(function () {
+                refreshTiles();
+            }, $("#fps-select").val());
+        }
+    });
 
     /**
      * @description 'Listener used to dynamically show or hide the timer by configuring it in the settings tab'
@@ -466,7 +479,7 @@ function generateVideoPuzzlePieces(video) {
 
     videoRefreshInterval = setInterval(function () {
         refreshTiles();
-    }, frameMS);
+    }, $("#fps-select").val());
 }
 
 /**
@@ -488,6 +501,7 @@ function generatePuzzlePieces(source, preview, targetWidth, targetHeight) {
     /// Make sure all previous puzzle pieces and intervals are deleted
     $(".tile-placeholder").remove();
     clearInterval(videoRefreshInterval);
+    videoRefreshInterval = null;
 
     // get the tile container
     const puzzleContainer = $("#puzzle-container")
@@ -778,6 +792,7 @@ function resetAll() {
     video = document.createElement("video");
     resetPuzzle();
     clearInterval(videoRefreshInterval);
+    videoRefreshInterval = null;
 }
 
 /**
@@ -837,7 +852,7 @@ function getVideoDevices(deviceInfos) {
             if (deviceInfo.deviceId) {
                 if (deviceInfo.deviceId == previousSelected) {
                     previousIndex = videoIndex;
-                } 
+                }
                 videoIndex++;
                 option.text = deviceInfo.label || `camera ${webcamSelect.length + 1}`;
                 webcamSelect.appendChild(option);

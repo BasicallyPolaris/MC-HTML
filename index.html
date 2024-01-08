@@ -58,7 +58,7 @@
                                     id="generate-btn">Generate</button>
                                 <select class="form-select" id="tileOptions">
                                     <option selected value="25">🧩 Beginner (25 Tiles)</option>
-                                    <option  value="49">🌊 Easy (50 Tiles)</option>
+                                    <option value="49">🌊 Easy (50 Tiles)</option>
                                     <option value="100">⛰ Medium (100 Tiles)</option>
                                     <option value="196">🏋️‍♀️ Hard (200 Tiles)</option>
                                     <option value="484">🔥 Extreme (500 Tiles)</option>
@@ -79,33 +79,45 @@
                     <div class="collapse" id="settings-tab">
                         <div class="row pt-2"> <!-- Switch classes to this if you want the box to be small -->
                             <div class="card card-body d-flex justify-content-start gap-2">
-                                <div class="form-check form-switch d-inline-flex">
+                                <div class="form-check form-switch d-flex flex-wrap justify-content-start">
                                     <input class="form-check-input" type="checkbox" role="switch"
                                         id="display-timer-switch" checked>
                                     <label class="form-check-label ps-1" for="display-timer-switch">Display
                                         Timer</label>
                                 </div>
-                                <div class="form-check form-switch d-inline-flex">
+                                <div class="form-check form-switch d-flex flex-wrap justify-content-start">
                                     <input class="form-check-input" type="checkbox" role="switch"
                                         id="generate-border-switch" checked>
                                     <label class="form-check-label ps-1" for="generate-border-switch">Draw
                                         Border</label>
                                 </div>
-                                <div class="form-check form-switch d-inline-flex align-items-center">
+                                <div class="form-check form-switch d-flex justify-content-start text-start align-items-center">
                                     <input class="form-check-input" type="checkbox" role="switch"
                                         id="custom-color-switch">
                                     <label class="form-check-label ps-1" for="display-timer-switch">Use custom color for
                                         border
                                     </label>
                                     <label for="custom-color-input" class="form-label d-inline-block ps-2"></label>
-                                    <input type="color" class="form-control form-control-color d-inline-block"
-                                        id="custom-color-input" value="#0D6EFD" title="Choose your border color">
+                                    <input type="color" class="form-control form-control-color d-inline-block
+                                        id=" custom-color-input" value="#0D6EFD" title="Choose your border color">
                                 </div>
-                                <div class="form-check form-switch d-inline-flex">
+                                <div class="form-check form-switch d-flex justify-content-start text-start">
                                     <input class="form-check-input" type="checkbox" role="switch"
                                         id="median-color-switch">
                                     <label class="form-check-label ps-1" for="median-color-switch">Use median color for
                                         border (only for images)</label>
+                                </div>
+                                <div class="form-floating">
+                                    <select class="form-select" id="fps-select"
+                                        aria-label="Select FPS of rendered video">
+                                        <option value="200">5 FPS</option>
+                                        <option value="100">10 FPS</option>
+                                        <option selected value="50">20 FPS</option>
+                                        <option value="33">30 FPS</option>
+                                        <option value="22">45 FPS</option>
+                                        <option value="17">60 FPS</option>
+                                    </select>
+                                    <label for="fps-select">Framerate of puzzle-pieces</label>
                                 </div>
                                 <div class="form-floating">
                                     <select class="form-select" id="webcam-select"
