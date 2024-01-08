@@ -23,5 +23,4 @@
 - Always include the `footer.js` before the `navbar.js`, as the navbar script modifies elements of the footer so it has to be loaded after (include order can be copied from the `index.html`) 
 
 ---
-- GitHub Link: https://github.com/BasicallyPolaris/MC-HTML
-- By Soheel Dario Aghadavoodi Jolfaei
+- By Soheel Dario Aghadavoodi Jolfaei - [GitHub Repo](https://github.com/BasicallyPolaris/MC-HTML)
