@@ -8,7 +8,7 @@
 - Supports using a custom color for borders
 - Supports custom refresh rate for video tiles to ensure performance on slower hardware#
 - Supports dynamic puzzle & tile resizing with the browser window
-- Supports Dark mode (with a switch & auto-detect preferred user theme)
+- Supports Dark mode (with a switch & auto-detect prefered user theme)
 
 ### Planned Features
 - Maybe a different view mode (unlikely, tried it but the normal view, which is being used, felt best)
@@ -16,6 +16,8 @@
 
 ### Impossible to implement
 - Safari mobile support for video tiles (can't see the safari logs due to lack of macbook, webcam seems to work however)
+  - Webcam seems to work, however switching dynamically doesn't work
+  - Video puzzle with uploaded file doesn't work
 - Didn't test mobile support on Android devices
 
 ### Notable
