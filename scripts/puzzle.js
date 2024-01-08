@@ -451,7 +451,7 @@ function generateImagePuzzlePieces(originalImage) {
     const targetWidth = originalImage.naturalWidth;
     const targetHeight = originalImage.naturalHeight;
 
-    generatePuzzlePieces(originalImage, targetWidth, targetHeight);
+    generatePuzzlePieces(originalImage, $("#puzzle-image"), targetWidth, targetHeight);
 }
 
 /**
@@ -462,7 +462,7 @@ function generateImagePuzzlePieces(originalImage) {
 function generateVideoPuzzlePieces(video) {
     const targetWidth = videoWidth;
     const targetHeight = videoHeight;
-    generatePuzzlePieces(video, targetWidth, targetHeight);
+    generatePuzzlePieces(video, $("#video-stream"), targetWidth, targetHeight);
 
     videoRefreshInterval = setInterval(function () {
         refreshTiles();
@@ -471,31 +471,39 @@ function generateVideoPuzzlePieces(video) {
 
 /**
  * @func generatePuzzlePieces
- * @description 'Generates the whole puzzle for a given targetwidth and targetheight and source'
  * @param targetWidth 'params0'
  * @param targetHeight 'params1'
  * @param eventListenersAdder 'params2'
  */
-function generatePuzzlePieces(source, targetWidth, targetHeight) {
-    /// Make sure all previous puzzle pieces and intervals are cleansed
+
+/**
+ * @func generatePuzzlePieces
+ * @description 'Generates the whole puzzle for a given targetwidth and targetheight and source'
+ * @param source 'Source for the puzzle'
+ * @param preview 'Preview jquery object of the puzzle (wrapper of video/image preview)'
+ * @param targetWidth 'amount of pixels to be cropped on X axis per tile'
+ * @param targetHeight 'amount of pixels to be cropped on Y axis per tile'
+ */
+function generatePuzzlePieces(source, preview, targetWidth, targetHeight) {
+    /// Make sure all previous puzzle pieces and intervals are deleted
     $(".tile-placeholder").remove();
     clearInterval(videoRefreshInterval);
 
-    // get the tile storage
+    // get the tile container
     const puzzleContainer = $("#puzzle-container")
 
-    // delta values for the actual image cropping
+    // delta values for the actual image cropping - round down to prevent white borders due to overdrawing and to secure equal tile sizes
     const deltaX = Math.floor(targetWidth / axisLength);
     const deltaY = Math.floor(targetHeight / axisLength);
 
-    // delta values for the displayed images (need to do some rounding)
-    const proportion = targetHeight / targetWidth;
-    const imageXDelta = Math.floor(targetWidth / axisLength);
-    const imageYDelta = Math.floor(targetWidth * proportion / axisLength);
+    // Calculate proportion of cropped tiles (not exactly the original proportion) and then calculate tile sizes
+    const proportion = preview.height() / preview.width();
+    const puzzleTileWidth = Math.floor(preview.width() / axisLength);
+    const puzzleTileHeight = Math.floor(preview.width() * proportion / axisLength);
 
-    // Give the puzzle storage the right size
-    puzzleContainer.css("width", (imageXDelta * axisLength + 24) + "px");
-    puzzleContainer.css("height", (imageYDelta * axisLength + 24) + "px");
+    // Give the puzzle container the right size (+ 24 to account for padding of container)
+    puzzleContainer.css("width", (puzzleTileWidth * axisLength + 24) + "px");
+    puzzleContainer.css("height", (puzzleTileHeight * axisLength + 24) + "px");
 
     // border color for the border
     const borderColor = getBorderColor();
@@ -520,8 +528,8 @@ function generatePuzzlePieces(source, targetWidth, targetHeight) {
             puzzleContainerElement.classList.add("tile-container-lightmode");
             puzzleContainerElement.setAttribute("id", "div-tile-" + i + "-" + j);
             puzzleContainerElement.setAttribute("coordinate", "tile-" + i + "-" + j);
-            puzzleContainerElement.style.width = imageXDelta + "px";
-            puzzleContainerElement.style.height = imageYDelta + "px";
+            puzzleContainerElement.style.width = puzzleTileWidth + "px";
+            puzzleContainerElement.style.height = puzzleTileHeight + "px";
 
             // Set id and class and attribute for logic and looks
             tile.setAttribute("id", "tile-" + offsetY + "-" + offsetX);
@@ -529,8 +537,8 @@ function generatePuzzlePieces(source, targetWidth, targetHeight) {
             tile.setAttribute("draggable", true);
 
             // Set initital tile size
-            tile.style.width = imageXDelta + "px";
-            tile.style.height = imageYDelta + "px";
+            tile.style.width = puzzleTileWidth + "px";
+            tile.style.height = puzzleTileHeight + "px";
 
             // Add event listeners for drag and drop
             tile.addEventListener('dragstart', drag);
@@ -679,26 +687,26 @@ function initializeWebcam() {
 function resizeTiles() {
     const isVideo = !$("#video-stream").parent().hasClass("d-none")
     const isImage = !$("#puzzle-image").hasClass("d-none");
-    var imageXDelta = 0;
-    var imageYDelta = 0;
+    var puzzleTileWidth = 0;
+    var puzzleTileHeight = 0;
 
     if (isVideo) {
-        imageXDelta = Math.floor($("#video-stream").width() / axisLength);
-        imageYDelta = Math.floor($("#video-stream").height() / axisLength);
+        puzzleTileWidth = Math.floor($("#video-stream").width() / axisLength);
+        puzzleTileHeight = Math.floor($("#video-stream").height() / axisLength);
     } else if (isImage) {
-        imageXDelta = Math.floor($("#puzzle-image").width() / axisLength);
-        imageYDelta = Math.floor($("#puzzle-image").height() / axisLength);
+        puzzleTileWidth = Math.floor($("#puzzle-image").width() / axisLength);
+        puzzleTileHeight = Math.floor($("#puzzle-image").height() / axisLength);
     }
 
     if (isVideo || isImage) {
-        var tileStorageWidth = imageXDelta * axisLength + 24;
-        var tileStorageHeight = imageYDelta * axisLength + 24;
-        $(".puzzle-tile").css("width", imageXDelta + "px");
-        $(".puzzle-tile").css("height", imageYDelta + "px");
-        $(".puzzle-tile").parent().css("width", imageXDelta + "px");
-        $(".puzzle-tile").parent().css("height", imageYDelta + "px");
-        $("#puzzle-container").css("width", tileStorageWidth + "px");
-        $("#puzzle-container").css("height", tileStorageHeight + "px");
+        var tileContainerWidth = puzzleTileWidth * axisLength + 24;
+        var tileContainerHeight = puzzleTileHeight * axisLength + 24;
+        $(".puzzle-tile").css("width", puzzleTileWidth + "px");
+        $(".puzzle-tile").css("height", puzzleTileHeight + "px");
+        $(".puzzle-tile").parent().css("width", puzzleTileWidth + "px");
+        $(".puzzle-tile").parent().css("height", puzzleTileHeight + "px");
+        $("#puzzle-container").css("width", tileContainerWidth + "px");
+        $("#puzzle-container").css("height", tileContainerHeight + "px");
     }
 }
 

@@ -10,10 +10,6 @@ body {
   flex-direction: column;
 }
 
-canvas {
-  vertical-align: bottom;
-}
-
 #content {
   flex: 1 0 auto;
 }
@@ -23,7 +19,8 @@ canvas {
   font-family: "Recursive", sans-serif;
 }
 
-#tile-container {
+/* Fixes canvas ghost lines as they are interpreted as characters */
+#puzzle-container {
   line-height: 1px!important;
   font-size: 0px;
 }
