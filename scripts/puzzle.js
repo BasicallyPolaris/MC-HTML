@@ -663,7 +663,6 @@ function initializeWebcam() {
                 .catch(function (vgaError) {
                     // Both HD and VGA constraints failed
                     resetAll();
-                    $("#webcam-btn").addClass("disabled");
                     alert("Sorry, your selected webcam \"" + webcamSelect.options[webcamSelect.selectedIndex].text + "\" isn't supported or is unavailable. Try changing it in the settings.")
                 });
         })
@@ -810,10 +809,17 @@ function resetWebcam() {
  * @param deviceInfos 'Device Infos'
  */
 function getVideoDevices(deviceInfos) {
+    // Define variables to reselect the previous selected camera on reset
+    const previousSelected = webcamSelect.value;
+
     // Handles being called several times to update labels. Preserve values.
     while (webcamSelect.firstChild) {
         webcamSelect.removeChild(webcamSelect.firstChild);
     }
+
+    // Used to iterate through the new index, if the old device is found select it
+    var videoIndex = 0;
+    var previousIndex = 0;
 
     for (let i = 0; i !== deviceInfos.length; i++) {
         const deviceInfo = deviceInfos[i];
@@ -821,17 +827,18 @@ function getVideoDevices(deviceInfos) {
         option.value = deviceInfo.deviceId;
         if (deviceInfo.kind === 'videoinput') {
             if (deviceInfo.deviceId) {
-                hasCameraOption = true;
+                if (deviceInfo.deviceId == previousSelected) {
+                    previousIndex = videoIndex;
+                } 
+                videoIndex++;
                 option.text = deviceInfo.label || `camera ${webcamSelect.length + 1}`;
                 webcamSelect.appendChild(option);
             }
         }
     }
 
-    // If there is no valid camera option, disable the webcam button
-    if (hasCameraOption) {
-        $("#webcam-btn").removeClass("disabled");
-    }
+    // Select old device or index 0
+    webcamSelect.selectedIndex = previousIndex;
 }
 
 /**
