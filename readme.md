@@ -12,7 +12,7 @@
 
 ### Planned Features
 - Maybe a different view mode (unlikely, tried it but the normal view, which is being used, felt best)
-- Currently none! :)
+- Support Export & Import of Game sessions via `.json`
 
 ### Impossible to implement
 - Safari mobile support for video tiles (can't see the safari logs due to lack of macbook, webcam seems to work however)
